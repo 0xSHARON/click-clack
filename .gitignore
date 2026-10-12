@@ -1,5 +1,6 @@
 # Secrets & Credentials
 npm.txt
+.npmrc
 .env
 .env.*
 !.env.example
