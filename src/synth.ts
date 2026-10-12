@@ -5,6 +5,15 @@ let noiseBuffer: AudioBuffer | null = null;
 let masterGain: GainNode | null = null;
 let currentProfile: SwitchProfile = 'thock';
 let masterVolume = 0.8;
+let isAudioMuted = false;
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && audioCtx && audioCtx.state === 'running') {
+      audioCtx.suspend().catch(() => {});
+    }
+  });
+}
 
 /**
  * Initializes or resumes the Web Audio API context.
@@ -22,7 +31,7 @@ function getAudioContext(): AudioContext | null {
   if (!audioCtx) {
     audioCtx = new AudioContextClass();
     masterGain = audioCtx.createGain();
-    masterGain.gain.setValueAtTime(masterVolume, audioCtx.currentTime);
+    masterGain.gain.setValueAtTime(isAudioMuted ? 0 : masterVolume, audioCtx.currentTime);
     masterGain.connect(audioCtx.destination);
     initNoiseBuffer(audioCtx);
   }
@@ -416,6 +425,7 @@ function synthesizeBubble(ctx: AudioContext, dest: AudioNode, now: number, pitch
  * Main switch sound trigger with humanized jitter, stereo panning, deskmat acoustics, and carriage bell.
  */
 export function playSwitch(options: PlaySwitchOptions = {}): void {
+  if (isAudioMuted) return;
   const ctx = getAudioContext();
   if (!ctx || !masterGain) return;
 
@@ -502,6 +512,22 @@ export function setMasterVolume(vol: number): void {
 
 export function getMasterVolume(): number {
   return masterVolume;
+}
+
+export function isMuted(): boolean {
+  return isAudioMuted;
+}
+
+export function setMuted(muted: boolean): void {
+  isAudioMuted = muted;
+  if (masterGain && audioCtx) {
+    masterGain.gain.setValueAtTime(muted ? 0 : masterVolume, audioCtx.currentTime);
+  }
+}
+
+export function toggleMute(): boolean {
+  setMuted(!isAudioMuted);
+  return isAudioMuted;
 }
 
 export function closeAudio(): void {

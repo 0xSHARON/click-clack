@@ -25,6 +25,11 @@
       "types": "./dist/svelte.d.ts",
       "import": "./dist/svelte.mjs",
       "require": "./dist/svelte.js"
+    },
+    "./auto": {
+      "types": "./dist/auto.d.ts",
+      "import": "./dist/auto.mjs",
+      "require": "./dist/auto.js"
     }
   },
   "files": [

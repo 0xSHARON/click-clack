@@ -3,13 +3,17 @@ import {
   closeAudio,
   getMasterProfile,
   getMasterVolume,
+  isMuted,
   playSwitch,
   setMasterProfile,
   setMasterVolume,
+  setMuted,
   synthesizeCarriageBell,
+  toggleMute,
   triggerHaptic,
 } from './synth';
 import { AttachOptions, PlaySwitchOptions, SwitchEngine, SwitchProfile } from './types';
+export { autoInitClickClack } from './auto';
 
 export * from './types';
 export {
@@ -18,6 +22,9 @@ export {
   getMasterProfile,
   setMasterVolume,
   getMasterVolume,
+  isMuted,
+  setMuted,
+  toggleMute,
   calculateKeyPan,
   synthesizeCarriageBell,
   triggerHaptic,

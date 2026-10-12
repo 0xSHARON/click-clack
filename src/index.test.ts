@@ -5,9 +5,12 @@ import {
   createSwitchEngine,
   getMasterProfile,
   getMasterVolume,
+  isMuted,
   playSwitch,
   setMasterProfile,
   setMasterVolume,
+  setMuted,
+  toggleMute,
 } from './index';
 import { resolveKeyRole } from './synth';
 
@@ -50,6 +53,21 @@ describe('Audio Settings & SwitchEngine', () => {
 
     setMasterVolume(-0.5);
     expect(getMasterVolume()).toBe(0.0);
+  });
+
+  it('toggles and manages mute state', () => {
+    setMuted(false);
+    expect(isMuted()).toBe(false);
+
+    toggleMute();
+    expect(isMuted()).toBe(true);
+
+    toggleMute();
+    expect(isMuted()).toBe(false);
+
+    setMuted(true);
+    expect(isMuted()).toBe(true);
+    setMuted(false);
   });
 
   it('updates and retrieves master switch profile including creamy and cyberpunk', () => {
