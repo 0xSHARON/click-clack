@@ -3,10 +3,10 @@
 > Satisfying, procedurally synthesized mechanical keyboard audio feedback for web apps.  
 > **Zero audio files**, under **2KB minified**, pure Web Audio API acoustics.
 
-[![npm version](https://img.shields.io/npm/v/click-clack?color=blue&style=flat-square)](https://www.npmjs.com/package/click-clack)
-[![bundle size](https://img.shields.io/bundlephobia/minzip/click-clack?color=brightgreen&style=flat-square)](https://bundlephobia.com/package/click-clack)
+[![npm version](https://img.shields.io/npm/v/@0xsharon/click-clack?color=blue&style=flat-square)](https://www.npmjs.com/package/@0xsharon/click-clack)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/@0xsharon/click-clack?color=brightgreen&style=flat-square)](https://bundlephobia.com/package/@0xsharon/click-clack)
 [![GitHub](https://img.shields.io/badge/GitHub-0xSHARON%2Fclick--clack-black?style=flat-square&logo=github)](https://github.com/0xSHARON/click-clack)
-[![license](https://img.shields.io/npm/l/click-clack?style=flat-square)](./LICENSE)
+[![license](https://img.shields.io/npm/l/@0xsharon/click-clack?style=flat-square)](./LICENSE)
 
 ---
 
@@ -28,11 +28,11 @@
 ## 📦 Installation
 
 ```bash
-npm install click-clack
+npm install @0xsharon/click-clack
 # or
-pnpm add click-clack
+pnpm add @0xsharon/click-clack
 # or
-yarn add click-clack
+yarn add @0xsharon/click-clack
 ```
 
 ---
@@ -44,7 +44,7 @@ yarn add click-clack
 Attach mechanical switch acoustics to any `<textarea>`, `<input>`, or the entire `window`:
 
 ```ts
-import { attachMechanicalAudio } from 'click-clack';
+import { attachMechanicalAudio } from '@0xsharon/click-clack';
 
 // Attach to an editor or input
 const unsubscribe = attachMechanicalAudio(document.querySelector('#editor'), {

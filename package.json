@@ -1,5 +1,5 @@
 {
-  "name": "click-clack",
+  "name": "@0xsharon/click-clack",
   "version": "1.0.0",
   "description": "Satisfying, procedurally synthesized mechanical keyboard audio feedback for web apps. Zero audio files, under 2KB minified.",
   "main": "./dist/index.js",
