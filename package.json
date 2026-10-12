@@ -1,6 +1,6 @@
 {
   "name": "@0xsharon/click-clack",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Satisfying, procedurally synthesized mechanical keyboard audio feedback for web apps. Zero audio files, under 2KB minified.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -15,6 +15,16 @@
       "types": "./dist/react.d.ts",
       "import": "./dist/react.mjs",
       "require": "./dist/react.js"
+    },
+    "./vue": {
+      "types": "./dist/vue.d.ts",
+      "import": "./dist/vue.mjs",
+      "require": "./dist/vue.js"
+    },
+    "./svelte": {
+      "types": "./dist/svelte.d.ts",
+      "import": "./dist/svelte.mjs",
+      "require": "./dist/svelte.js"
     }
   },
   "files": [
@@ -41,7 +51,9 @@
     "ui-feedback",
     "micro-interactions",
     "synthesizer",
-    "react-hook"
+    "react-hook",
+    "vue-directive",
+    "svelte-action"
   ],
   "author": "0xSHARON",
   "license": "MIT",

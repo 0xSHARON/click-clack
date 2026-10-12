@@ -6,6 +6,7 @@ import {
   playSwitch,
   setMasterProfile,
   setMasterVolume,
+  synthesizeCarriageBell,
   triggerHaptic,
 } from './synth';
 import { AttachOptions, PlaySwitchOptions, SwitchEngine, SwitchProfile } from './types';
@@ -18,6 +19,7 @@ export {
   setMasterVolume,
   getMasterVolume,
   calculateKeyPan,
+  synthesizeCarriageBell,
   triggerHaptic,
   closeAudio,
 };
@@ -33,7 +35,9 @@ export {
  *   profile: 'creamy',
  *   volume: 0.8,
  *   stereoPan: true,
- *   wpmDynamics: true
+ *   wpmDynamics: true,
+ *   deskmat: 'wood',
+ *   carriageBell: true
  * });
  *
  * // Later, teardown when needed:
@@ -55,6 +59,8 @@ export function attachMechanicalAudio(
     stereoPan = true,
     haptic = false,
     wpmDynamics = false,
+    deskmat = 'none',
+    carriageBell = false,
     filter,
   } = options;
 
@@ -66,7 +72,7 @@ export function attachMechanicalAudio(
     keyTimestamps.push(now);
     // Retain only keystrokes from the last 3 seconds
     keyTimestamps = keyTimestamps.filter((t) => now - t < 3000);
-    const estimatedWpm = keyTimestamps.length * 4; // (keystrokes / 5) * (60 / 3)
+    const estimatedWpm = keyTimestamps.length * 4;
     if (estimatedWpm > 60) {
       return 1.0 + Math.min(0.18, (estimatedWpm - 60) * 0.0025);
     }
@@ -75,7 +81,7 @@ export function attachMechanicalAudio(
 
   const handleKeyDown = (event: Event) => {
     const kbEvent = event as KeyboardEvent;
-    if (kbEvent.repeat) return; // Prevent machine buzz on key hold
+    if (kbEvent.repeat) return;
     if (filter && !filter(kbEvent)) return;
 
     const pitchBoost = getWpmMultiplier();
@@ -88,6 +94,8 @@ export function attachMechanicalAudio(
       pan,
       key: kbEvent.key,
       isRelease: false,
+      deskmat,
+      carriageBell,
       haptic,
     });
   };
@@ -105,6 +113,8 @@ export function attachMechanicalAudio(
       pan,
       key: kbEvent.key,
       isRelease: true,
+      deskmat,
+      carriageBell: false,
       haptic: false,
     });
   };
@@ -138,6 +148,8 @@ export function createSwitchEngine(defaultOptions: PlaySwitchOptions = {}): Swit
         pan: opts.pan,
         isRelease: opts.isRelease,
         key: opts.key,
+        deskmat: opts.deskmat,
+        carriageBell: opts.carriageBell,
         haptic: opts.haptic,
       });
     },

@@ -8,6 +8,8 @@ export type SwitchProfile =
 
 export type KeyRole = 'standard' | 'space' | 'enter' | 'backspace' | 'modifier';
 
+export type DeskmatAcoustic = 'none' | 'felt' | 'wood' | 'metal';
+
 export interface PlaySwitchOptions {
   /** Switch profile sound signature. Default: 'thock' */
   profile?: SwitchProfile;
@@ -21,6 +23,10 @@ export interface PlaySwitchOptions {
   isRelease?: boolean;
   /** Key name or KeyRole for tailored acoustics (e.g., Spacebar has stabilizer thud). */
   key?: string | KeyRole;
+  /** Deskmat acoustic surface resonance. Default: 'none' */
+  deskmat?: DeskmatAcoustic;
+  /** Synthesize vintage typewriter bell on Enter. Default: false */
+  carriageBell?: boolean;
   /** Trigger mobile haptic micro-vibration if supported. Default: false */
   haptic?: boolean;
 }
@@ -38,6 +44,10 @@ export interface AttachOptions {
   haptic?: boolean;
   /** Dynamically modulate pitch based on typing speed (WPM flow state). Default: false */
   wpmDynamics?: boolean;
+  /** Deskmat acoustic surface resonance. Default: 'none' */
+  deskmat?: DeskmatAcoustic;
+  /** Synthesize vintage typewriter bell on Enter. Default: false */
+  carriageBell?: boolean;
   /** Optional custom filter to ignore certain keys. */
   filter?: (event: KeyboardEvent) => boolean;
 }

@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>click-clack ⌨️ Mechanical Keyboard Audio Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card: #161b22;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent-glow: rgba(88, 166, 255, 0.25);
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --key-bg: #21262d;
+      --key-active: #388bfd;
+      --key-shadow: #111418;
+      --green: #3fb950;
+      --orange: #f0883e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    .badge-bar {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      background: rgba(88, 166, 255, 0.1);
+      border: 1px solid rgba(88, 166, 255, 0.3);
+      color: var(--accent);
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .badge.green {
+      background: rgba(63, 185, 80, 0.1);
+      border-color: rgba(63, 185, 80, 0.3);
+      color: var(--green);
+    }
+
+    .badge.orange {
+      background: rgba(240, 136, 62, 0.1);
+      border-color: rgba(240, 136, 62, 0.3);
+      color: var(--orange);
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #ffffff 40%, #58a6ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      padding: 1.25rem;
+      background: rgba(13, 17, 23, 0.7);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .row-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .profile-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .profile-btn {
+      background: var(--key-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem 0.95rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .profile-btn:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .profile-btn.active {
+      background: var(--accent);
+      color: #0d1117;
+      border-color: var(--accent);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .feature-toggles {
+      display: flex;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+      align-items: center;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-label input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .select-label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    select {
+      background: var(--key-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .wpm-meter {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .wpm-value {
+      color: var(--green);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .editor-box {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    textarea {
+      width: 100%;
+      height: 160px;
+      background: #0d1117;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      padding: 1.2rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .keyboard-preview {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 0.5rem;
+      padding: 1rem;
+      background: #0d1117;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .key-cap {
+      aspect-ratio: 1;
+      background: var(--key-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 0 var(--key-shadow);
+      transition: all 0.08s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .key-cap:active, .key-cap.pressed {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 var(--key-shadow);
+      background: var(--key-active);
+      color: #fff;
+    }
+
+    .key-space {
+      grid-column: span 6;
+      aspect-ratio: auto;
+      height: 48px;
+    }
+
+    .key-action {
+      grid-column: span 2;
+      aspect-ratio: auto;
+      height: 48px;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge-bar">
+        <span class="badge">PROMPT SYNTHESIZED • &lt; 2KB</span>
+        <span class="badge green">🎧 3D STEREO PANNING</span>
+        <span class="badge orange">🪵 DESKMAT RESONANCE</span>
+      </div>
+      <h1>click-clack ⌨️</h1>
+      <p class="subtitle">Satisfying mechanical keyboard audio feedback for web apps. Zero audio files.</p>
+    </header>
+
+    <div class="controls">
+      <div class="row-controls">
+        <div class="profile-group">
+          <button class="profile-btn active" data-profile="thock">🪨 Thock</button>
+          <button class="profile-btn" data-profile="creamy">🧋 Creamy</button>
+          <button class="profile-btn" data-profile="clicky">⚡ Clicky</button>
+          <button class="profile-btn" data-profile="typewriter">📜 Typewriter</button>
+          <button class="profile-btn" data-profile="cyberpunk">🤖 Cyberpunk</button>
+          <button class="profile-btn" data-profile="bubble">🫧 Bubble</button>
+        </div>
+
+        <div class="wpm-meter">
+          <span>SPEED:</span>
+          <span class="wpm-value" id="wpm-display">0</span>
+          <span>WPM</span>
+        </div>
+      </div>
+
+      <div class="row-controls">
+        <div class="feature-toggles">
+          <label class="toggle-label">
+            <input type="checkbox" id="stereo-toggle" checked />
+            <span>3D Stereo</span>
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" id="wpm-toggle" checked />
+            <span>WPM Boost</span>
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" id="bell-toggle" checked />
+            <span>🔔 Carriage Bell</span>
+          </label>
+          <label class="select-label">
+            <span>Deskmat:</span>
+            <select id="deskmat-select">
+              <option value="none">None (Clean)</option>
+              <option value="felt">Felt (Dampened)</option>
+              <option value="wood">Wood (Warm)</option>
+              <option value="metal">Metal (Ping)</option>
+            </select>
+          </label>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.6rem; color: var(--text-muted); font-size: 0.88rem;">
+          <span>Volume</span>
+          <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="0.8" style="accent-color: var(--accent); cursor: pointer;" />
+        </div>
+      </div>
+    </div>
+
+    <div class="editor-box">
+      <label for="editor">
+        <span>Type to feel the switches:</span>
+        <span style="color: var(--accent);">🎧 Plug in headphones for 3D stereo acoustics</span>
+      </label>
+      <textarea id="editor" autofocus placeholder="Start typing here... Notice left-hand keys (Q, A, Z) sound in your left ear, right-hand keys (P, L, Enter) in your right ear, Spacebar has heavy stabilizer thud, and hitting Enter rings the carriage return bell!"></textarea>
+    </div>
+
+    <div class="keyboard-preview" id="key-grid">
+      <div class="key-cap" data-key="q">Q</div>
+      <div class="key-cap" data-key="w">W</div>
+      <div class="key-cap" data-key="e">E</div>
+      <div class="key-cap" data-key="r">R</div>
+      <div class="key-cap" data-key="t">T</div>
+      <div class="key-cap" data-key="y">Y</div>
+      <div class="key-cap" data-key="u">U</div>
+      <div class="key-cap" data-key="i">I</div>
+      <div class="key-cap" data-key="o">O</div>
+      <div class="key-cap" data-key="p">P</div>
+      <div class="key-cap key-action" data-key="Backspace">⌫ Del</div>
+      <div class="key-cap key-space" data-key=" ">Spacebar (Stabilizer)</div>
+      <div class="key-cap key-action" data-key="Enter">⏎ Enter 🔔</div>
+    </div>
+
+    <footer>
+      Run <code>npm i @0xsharon/click-clack</code> to install. Published under MIT © 0xSHARON.
+    </footer>
+  </div>
+
+  <script type="module">
+    let audioCtx = null;
+    let noiseBuffer = null;
+    let currentProfile = 'thock';
+    let masterVolume = 0.8;
+    let stereoEnabled = true;
+    let wpmDynamicsEnabled = true;
+    let bellEnabled = true;
+    let deskmatMaterial = 'none';
+    let keyTimestamps = [];
+
+    function getAudioCtx() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const bufSize = audioCtx.sampleRate;
+        noiseBuffer = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+        const data = noiseBuffer.getChannelData(0);
+        let b0 = 0, b1 = 0, b2 = 0;
+        for (let i = 0; i < bufSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          data[i] = (b0 + b1 + b2 + white * 0.5362) * 0.11;
+        }
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function calculatePan(key) {
+      if (!stereoEnabled || !key) return 0;
+      const k = key.toLowerCase();
+      if (['q', 'a', 'z', '1', '2', 'tab', 'capslock', 'shift'].includes(k)) return -0.42;
+      if (['w', 'e', 's', 'd', 'x', 'c', '3', '4'].includes(k)) return -0.22;
+      if (['r', 't', 'f', 'g', 'v', 'b', '5', '6', ' '].includes(k)) return 0;
+      if (['y', 'u', 'h', 'j', 'n', 'm', '7', '8'].includes(k)) return 0.22;
+      if (['i', 'o', 'p', 'k', 'l', '9', '0', 'enter', 'backspace'].includes(k)) return 0.42;
+      return 0;
+    }
+
+    function updateWpm() {
+      const now = Date.now();
+      keyTimestamps.push(now);
+      keyTimestamps = keyTimestamps.filter(t => now - t < 3000);
+      const wpm = Math.round(keyTimestamps.length * 4);
+      document.getElementById('wpm-display').innerText = wpm;
+      return wpm;
+    }
+
+    setInterval(() => {
+      const now = Date.now();
+      keyTimestamps = keyTimestamps.filter(t => now - t < 3000);
+      const wpm = Math.round(keyTimestamps.length * 4);
+      document.getElementById('wpm-display').innerText = wpm;
+    }, 1000);
+
+    function playBell() {
+      const ctx = getAudioCtx();
+      const now = ctx.currentTime;
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const bellGain = ctx.createGain();
+
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(1860, now);
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(3720, now);
+
+      bellGain.gain.setValueAtTime(0.35, now);
+      bellGain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+
+      osc1.connect(bellGain);
+      osc2.connect(bellGain);
+      bellGain.connect(ctx.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + 0.55);
+      osc2.stop(now + 0.55);
+    }
+
+    function playSwitchSound(key = 'a', isRelease = false) {
+      const ctx = getAudioCtx();
+      const now = ctx.currentTime;
+      const isSpace = key === ' ' || key === 'space';
+      const isEnter = key === 'Enter' || key === 'enter';
+      const jitter = 0.96 + Math.random() * 0.08;
+
+      if (bellEnabled && isEnter && !isRelease) {
+        playBell();
+      }
+
+      let speedMultiplier = 1.0;
+      if (wpmDynamicsEnabled && !isRelease) {
+        const wpm = updateWpm();
+        if (wpm > 60) speedMultiplier = 1 + Math.min(0.18, (wpm - 60) * 0.0025);
+      }
+
+      const pitchMult = jitter * speedMultiplier;
+
+      const keyGain = ctx.createGain();
+      keyGain.gain.setValueAtTime(masterVolume, now);
+
+      const deskmatNode = ctx.createGain();
+      if (deskmatMaterial === 'felt') {
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(950, now);
+        keyGain.connect(filter);
+        filter.connect(deskmatNode);
+      } else if (deskmatMaterial === 'wood') {
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'peaking';
+        filter.frequency.setValueAtTime(280, now);
+        filter.gain.setValueAtTime(5, now);
+        keyGain.connect(filter);
+        filter.connect(deskmatNode);
+      } else if (deskmatMaterial === 'metal') {
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'peaking';
+        filter.frequency.setValueAtTime(3200, now);
+        filter.gain.setValueAtTime(4, now);
+        keyGain.connect(filter);
+        filter.connect(deskmatNode);
+      } else {
+        keyGain.connect(deskmatNode);
+      }
+
+      const pan = calculatePan(key);
+      if (pan !== 0 && ctx.createStereoPanner) {
+        const panner = ctx.createStereoPanner();
+        panner.pan.setValueAtTime(pan, now);
+        deskmatNode.connect(panner);
+        panner.connect(ctx.destination);
+      } else {
+        deskmatNode.connect(ctx.destination);
+      }
+
+      if (currentProfile === 'creamy') {
+        const duration = isRelease ? 0.025 : (isSpace ? 0.075 : 0.05);
+        const osc = ctx.createOscillator();
+        const oscGain = ctx.createGain();
+        const baseFreq = (isSpace ? 140 : (isRelease ? 290 : 220)) * pitchMult;
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(baseFreq * 1.8, now);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.7, now + duration);
+        oscGain.gain.setValueAtTime(isRelease ? 0.3 : (isSpace ? 0.9 : 0.75), now);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        osc.connect(oscGain);
+        oscGain.connect(keyGain);
+        osc.start(now);
+        osc.stop(now + duration);
+
+        if (noiseBuffer) {
+          const noise = ctx.createBufferSource();
+          noise.buffer = noiseBuffer;
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.Q.setValueAtTime(2.2, now);
+          filter.frequency.setValueAtTime((isRelease ? 1600 : 1350) * pitchMult, now);
+          filter.frequency.exponentialRampToValueAtTime(320, now + duration);
+          const nGain = ctx.createGain();
+          nGain.gain.setValueAtTime(isRelease ? 0.2 : 0.5, now);
+          nGain.gain.exponentialRampToValueAtTime(0.001, now + (duration * 0.75));
+          noise.connect(filter);
+          filter.connect(nGain);
+          nGain.connect(keyGain);
+          noise.start(now);
+          noise.stop(now + duration);
+        }
+      } else if (currentProfile === 'cyberpunk') {
+        const duration = isRelease ? 0.025 : (isSpace ? 0.07 : 0.045);
+        const osc = ctx.createOscillator();
+        const oscGain = ctx.createGain();
+        const startFreq = (isSpace ? 480 : (isRelease ? 880 : 740)) * pitchMult;
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(startFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(startFreq * 0.4, now + duration);
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1800, now);
+
+        oscGain.gain.setValueAtTime(isRelease ? 0.2 : 0.5, now);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        osc.connect(filter);
+        filter.connect(oscGain);
+        oscGain.connect(keyGain);
+        osc.start(now);
+        osc.stop(now + duration);
+      } else if (currentProfile === 'thock') {
+        const osc = ctx.createOscillator();
+        const oscGain = ctx.createGain();
+        const duration = isRelease ? 0.03 : (isSpace ? 0.09 : 0.06);
+        const baseFreq = (isSpace ? 110 : (isRelease ? 220 : 160)) * pitchMult;
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(baseFreq * 1.5, now);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.6, now + duration);
+        oscGain.gain.setValueAtTime(isRelease ? 0.35 : (isSpace ? 1.0 : 0.85), now);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        osc.connect(oscGain);
+        oscGain.connect(keyGain);
+        osc.start(now);
+        osc.stop(now + duration);
+
+        if (noiseBuffer) {
+          const noise = ctx.createBufferSource();
+          noise.buffer = noiseBuffer;
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(isSpace ? 650 * pitchMult : 850 * pitchMult, now);
+          filter.frequency.exponentialRampToValueAtTime(180, now + duration);
+          const nGain = ctx.createGain();
+          nGain.gain.setValueAtTime(isRelease ? 0.2 : (isSpace ? 0.7 : 0.55), now);
+          nGain.gain.exponentialRampToValueAtTime(0.001, now + (duration * 0.8));
+          noise.connect(filter);
+          filter.connect(nGain);
+          nGain.connect(keyGain);
+          noise.start(now);
+          noise.stop(now + duration);
+        }
+      } else if (currentProfile === 'clicky') {
+        const duration = isRelease ? 0.025 : (isSpace ? 0.065 : 0.045);
+        if (noiseBuffer) {
+          const noise = ctx.createBufferSource();
+          noise.buffer = noiseBuffer;
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.Q.setValueAtTime(3.5, now);
+          filter.frequency.setValueAtTime((isRelease ? 3400 : 2800) * pitchMult, now);
+          const nGain = ctx.createGain();
+          nGain.gain.setValueAtTime(isRelease ? 0.4 : 0.85, now);
+          nGain.gain.exponentialRampToValueAtTime(0.001, now + (isRelease ? 0.015 : 0.022));
+          noise.connect(filter);
+          filter.connect(nGain);
+          nGain.connect(keyGain);
+          noise.start(now);
+          noise.stop(now + duration);
+        }
+
+        const osc = ctx.createOscillator();
+        const oscGain = ctx.createGain();
+        const pingFreq = (isRelease ? 1200 : 920) * pitchMult;
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(pingFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(pingFreq * 0.8, now + duration);
+        oscGain.gain.setValueAtTime(isRelease ? 0.15 : 0.45, now);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        osc.connect(oscGain);
+        oscGain.connect(keyGain);
+        osc.start(now);
+        osc.stop(now + duration);
+      } else if (currentProfile === 'typewriter') {
+        const duration = isRelease ? 0.03 : (isSpace ? 0.08 : 0.06);
+        const metal = ctx.createOscillator();
+        const metalGain = ctx.createGain();
+        metal.type = 'sawtooth';
+        metal.frequency.setValueAtTime((isRelease ? 1800 : 1400) * pitchMult, now);
+        metal.frequency.exponentialRampToValueAtTime(350, now + duration);
+        metalGain.gain.setValueAtTime(isRelease ? 0.2 : 0.6, now);
+        metalGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        metal.connect(metalGain);
+        metalGain.connect(keyGain);
+        metal.start(now);
+        metal.stop(now + duration);
+      } else if (currentProfile === 'bubble') {
+        if (!isRelease) {
+          const osc = ctx.createOscillator();
+          const oscGain = ctx.createGain();
+          const startFreq = (isSpace ? 480 : 720) * pitchMult;
+          const endFreq = (isSpace ? 220 : 360) * pitchMult;
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(startFreq, now);
+          osc.frequency.exponentialRampToValueAtTime(endFreq, now + 0.04);
+          oscGain.gain.setValueAtTime(0.7, now);
+          oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+          osc.connect(oscGain);
+          oscGain.connect(keyGain);
+          osc.start(now);
+          osc.stop(now + 0.04);
+        }
+      }
+    }
+
+    const editor = document.getElementById('editor');
+    editor.addEventListener('keydown', (e) => {
+      if (e.repeat) return;
+      playSwitchSound(e.key, false);
+      highlightKey(e.key, true);
+    });
+
+    editor.addEventListener('keyup', (e) => {
+      playSwitchSound(e.key, true);
+      highlightKey(e.key, false);
+    });
+
+    document.querySelectorAll('.profile-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentProfile = btn.dataset.profile;
+        playSwitchSound('a', false);
+      });
+    });
+
+    document.getElementById('vol-slider').addEventListener('input', (e) => {
+      masterVolume = parseFloat(e.target.value);
+    });
+
+    document.getElementById('stereo-toggle').addEventListener('change', (e) => {
+      stereoEnabled = e.target.checked;
+    });
+
+    document.getElementById('wpm-toggle').addEventListener('change', (e) => {
+      wpmDynamicsEnabled = e.target.checked;
+    });
+
+    document.getElementById('bell-toggle').addEventListener('change', (e) => {
+      bellEnabled = e.target.checked;
+    });
+
+    document.getElementById('deskmat-select').addEventListener('change', (e) => {
+      deskmatMaterial = e.target.value;
+    });
+
+    document.querySelectorAll('.key-cap').forEach(key => {
+      key.addEventListener('mousedown', () => {
+        playSwitchSound(key.dataset.key, false);
+        key.classList.add('pressed');
+      });
+      key.addEventListener('mouseup', () => {
+        playSwitchSound(key.dataset.key, true);
+        key.classList.remove('pressed');
+      });
+    });
+
+    function highlightKey(key, isPressed) {
+      const match = Array.from(document.querySelectorAll('.key-cap')).find(el => 
+        el.dataset.key.toLowerCase() === key.toLowerCase()
+      );
+      if (match) {
+        if (isPressed) match.classList.add('pressed');
+        else match.classList.remove('pressed');
+      }
+    }
+  </script>
+</body>
+</html>

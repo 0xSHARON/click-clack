@@ -1,4 +1,4 @@
-import { KeyRole, PlaySwitchOptions, SwitchProfile } from './types';
+import { DeskmatAcoustic, KeyRole, PlaySwitchOptions, SwitchProfile } from './types';
 
 let audioCtx: AudioContext | null = null;
 let noiseBuffer: AudioBuffer | null = null;
@@ -103,6 +103,64 @@ export function triggerHaptic(duration = 7): void {
 }
 
 /**
+ * Procedural synthesizer for vintage typewriter carriage return bell ("DING!").
+ */
+export function synthesizeCarriageBell(ctx: AudioContext, dest: AudioNode, now: number): void {
+  const osc1 = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const bellGain = ctx.createGain();
+
+  // Dual metallic bell harmonic
+  osc1.type = 'sine';
+  osc1.frequency.setValueAtTime(1860, now);
+
+  osc2.type = 'sine';
+  osc2.frequency.setValueAtTime(3720, now);
+
+  const duration = 0.55;
+  bellGain.gain.setValueAtTime(0.4, now);
+  bellGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+  osc1.connect(bellGain);
+  osc2.connect(bellGain);
+  bellGain.connect(dest);
+
+  osc1.start(now);
+  osc2.start(now);
+  osc1.stop(now + duration);
+  osc2.stop(now + duration);
+}
+
+/**
+ * Apply surface material resonance acoustics (felt dampening, wood warmth, or metal ring).
+ */
+function applyDeskmatFilter(ctx: AudioContext, input: AudioNode, output: AudioNode, material: DeskmatAcoustic, now: number): void {
+  if (material === 'felt') {
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(950, now);
+    input.connect(filter);
+    filter.connect(output);
+  } else if (material === 'wood') {
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'peaking';
+    filter.frequency.setValueAtTime(280, now);
+    filter.gain.setValueAtTime(5, now);
+    input.connect(filter);
+    filter.connect(output);
+  } else if (material === 'metal') {
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'peaking';
+    filter.frequency.setValueAtTime(3200, now);
+    filter.gain.setValueAtTime(4, now);
+    input.connect(filter);
+    filter.connect(output);
+  } else {
+    input.connect(output);
+  }
+}
+
+/**
  * Procedural synthesizer for "Thock" (lubed tactile/linear mechanical switches).
  */
 function synthesizeThock(ctx: AudioContext, dest: AudioNode, now: number, pitchMult: number, isRelease: boolean, role: KeyRole) {
@@ -155,7 +213,6 @@ function synthesizeCreamy(ctx: AudioContext, dest: AudioNode, now: number, pitch
   const isSpace = role === 'space';
   const duration = isRelease ? 0.025 : (isSpace ? 0.075 : 0.05);
 
-  // 1. Marbly resonance pop (Triangle with smooth glide)
   const osc = ctx.createOscillator();
   const oscGain = ctx.createGain();
 
@@ -173,7 +230,6 @@ function synthesizeCreamy(ctx: AudioContext, dest: AudioNode, now: number, pitch
   osc.start(now);
   osc.stop(now + duration);
 
-  // 2. High-cut marbly marble click
   if (noiseBuffer) {
     const noise = ctx.createBufferSource();
     noise.buffer = noiseBuffer;
@@ -357,7 +413,7 @@ function synthesizeBubble(ctx: AudioContext, dest: AudioNode, now: number, pitch
 }
 
 /**
- * Main switch sound trigger with humanized jitter, stereo panning & key roles.
+ * Main switch sound trigger with humanized jitter, stereo panning, deskmat acoustics, and carriage bell.
  */
 export function playSwitch(options: PlaySwitchOptions = {}): void {
   const ctx = getAudioContext();
@@ -366,9 +422,17 @@ export function playSwitch(options: PlaySwitchOptions = {}): void {
   const profile = options.profile || currentProfile;
   const role = resolveKeyRole(options.key);
   const isRelease = Boolean(options.isRelease);
+  const deskmat = options.deskmat ?? 'none';
 
   if (options.haptic) {
     triggerHaptic(isRelease ? 5 : 8);
+  }
+
+  const now = ctx.currentTime;
+
+  // Carriage Return Ding Bell on Enter
+  if (options.carriageBell && role === 'enter' && !isRelease) {
+    synthesizeCarriageBell(ctx, masterGain, now);
   }
 
   // Humanization jitter: organic variation (±4% pitch, ±5% gain)
@@ -380,44 +444,43 @@ export function playSwitch(options: PlaySwitchOptions = {}): void {
   const keyGain = ctx.createGain();
   const baseVol = options.volume ?? 1.0;
   const volJitter = 0.95 + Math.random() * 0.1;
-  keyGain.gain.setValueAtTime(Math.min(1.0, Math.max(0, baseVol * volJitter)), ctx.currentTime);
+  keyGain.gain.setValueAtTime(Math.min(1.0, Math.max(0, baseVol * volJitter)), now);
+
+  // Apply Deskmat Material Resonance
+  const deskmatNode = ctx.createGain();
+  applyDeskmatFilter(ctx, keyGain, deskmatNode, deskmat, now);
 
   // 3D Spatial Stereo Panning
-  let targetDestination: AudioNode = masterGain;
   const panValue = options.pan ?? (typeof options.key === 'string' ? calculateKeyPan(options.key) : 0);
 
   if (panValue !== 0 && typeof ctx.createStereoPanner === 'function') {
     const panner = ctx.createStereoPanner();
-    panner.pan.setValueAtTime(Math.min(1.0, Math.max(-1.0, panValue)), ctx.currentTime);
-    keyGain.connect(panner);
+    panner.pan.setValueAtTime(Math.min(1.0, Math.max(-1.0, panValue)), now);
+    deskmatNode.connect(panner);
     panner.connect(masterGain);
-    targetDestination = keyGain;
   } else {
-    keyGain.connect(masterGain);
-    targetDestination = keyGain;
+    deskmatNode.connect(masterGain);
   }
-
-  const now = ctx.currentTime;
 
   switch (profile) {
     case 'creamy':
-      synthesizeCreamy(ctx, targetDestination, now, pitchMult, isRelease, role);
+      synthesizeCreamy(ctx, keyGain, now, pitchMult, isRelease, role);
       break;
     case 'cyberpunk':
-      synthesizeCyberpunk(ctx, targetDestination, now, pitchMult, isRelease, role);
+      synthesizeCyberpunk(ctx, keyGain, now, pitchMult, isRelease, role);
       break;
     case 'clicky':
-      synthesizeClicky(ctx, targetDestination, now, pitchMult, isRelease, role);
+      synthesizeClicky(ctx, keyGain, now, pitchMult, isRelease, role);
       break;
     case 'typewriter':
-      synthesizeTypewriter(ctx, targetDestination, now, pitchMult, isRelease, role);
+      synthesizeTypewriter(ctx, keyGain, now, pitchMult, isRelease, role);
       break;
     case 'bubble':
-      synthesizeBubble(ctx, targetDestination, now, pitchMult, isRelease, role);
+      synthesizeBubble(ctx, keyGain, now, pitchMult, isRelease, role);
       break;
     case 'thock':
     default:
-      synthesizeThock(ctx, targetDestination, now, pitchMult, isRelease, role);
+      synthesizeThock(ctx, keyGain, now, pitchMult, isRelease, role);
       break;
   }
 }
