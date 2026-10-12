@@ -1,0 +1,71 @@
+{
+  "name": "click-clack",
+  "version": "1.0.0",
+  "description": "Satisfying, procedurally synthesized mechanical keyboard audio feedback for web apps. Zero audio files, under 2KB minified.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.mjs",
+      "require": "./dist/react.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm run test"
+  },
+  "keywords": [
+    "mechanical-keyboard",
+    "audio",
+    "web-audio-api",
+    "sound-effects",
+    "sound",
+    "clicks",
+    "thock",
+    "haptics",
+    "ui-feedback",
+    "micro-interactions",
+    "synthesizer",
+    "react-hook"
+  ],
+  "author": "0xSHARON",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/0xSHARON/click-clack.git"
+  },
+  "bugs": {
+    "url": "https://github.com/0xSHARON/click-clack/issues"
+  },
+  "homepage": "https://github.com/0xSHARON/click-clack#readme",
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  }
+}

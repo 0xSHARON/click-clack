@@ -1,0 +1,22 @@
+# Secrets & Credentials
+npm.txt
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Production output
+dist/
+
+# Test coverage & logs
+coverage/
+*.log
+npm-debug.log*
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
