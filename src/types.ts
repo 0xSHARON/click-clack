@@ -1,4 +1,10 @@
-export type SwitchProfile = 'clicky' | 'thock' | 'typewriter' | 'bubble';
+export type SwitchProfile =
+  | 'thock'
+  | 'clicky'
+  | 'typewriter'
+  | 'bubble'
+  | 'creamy'
+  | 'cyberpunk';
 
 export type KeyRole = 'standard' | 'space' | 'enter' | 'backspace' | 'modifier';
 
@@ -9,10 +15,14 @@ export interface PlaySwitchOptions {
   volume?: number;
   /** Pitch multiplier. 1.0 is default. Default: 1.0 */
   pitch?: number;
+  /** Stereo pan position from -1.0 (left) to 1.0 (right). If omitted, calculated from key position if stereo is enabled. */
+  pan?: number;
   /** Whether this is a key release (upstroke) sound. Default: false */
   isRelease?: boolean;
   /** Key name or KeyRole for tailored acoustics (e.g., Spacebar has stabilizer thud). */
   key?: string | KeyRole;
+  /** Trigger mobile haptic micro-vibration if supported. Default: false */
+  haptic?: boolean;
 }
 
 export interface AttachOptions {
@@ -22,6 +32,12 @@ export interface AttachOptions {
   volume?: number;
   /** Play release sound on keyup. Default: true */
   playRelease?: boolean;
+  /** Enable 3D spatial stereo panning based on keyboard layout. Default: true */
+  stereoPan?: boolean;
+  /** Enable mobile haptic micro-vibrations on mobile touch devices. Default: false */
+  haptic?: boolean;
+  /** Dynamically modulate pitch based on typing speed (WPM flow state). Default: false */
+  wpmDynamics?: boolean;
   /** Optional custom filter to ignore certain keys. */
   filter?: (event: KeyboardEvent) => boolean;
 }

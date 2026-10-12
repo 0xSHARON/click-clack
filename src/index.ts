@@ -1,10 +1,12 @@
 import {
+  calculateKeyPan,
   closeAudio,
   getMasterProfile,
   getMasterVolume,
   playSwitch,
   setMasterProfile,
   setMasterVolume,
+  triggerHaptic,
 } from './synth';
 import { AttachOptions, PlaySwitchOptions, SwitchEngine, SwitchProfile } from './types';
 
@@ -15,6 +17,8 @@ export {
   getMasterProfile,
   setMasterVolume,
   getMasterVolume,
+  calculateKeyPan,
+  triggerHaptic,
   closeAudio,
 };
 
@@ -23,15 +27,16 @@ export {
  *
  * @example
  * ```ts
- * import { attachMechanicalAudio } from 'click-clack';
+ * import { attachMechanicalAudio } from '@0xsharon/click-clack';
  *
  * const unsubscribe = attachMechanicalAudio(document.querySelector('textarea'), {
- *   profile: 'thock',
+ *   profile: 'creamy',
  *   volume: 0.8,
- *   playRelease: true
+ *   stereoPan: true,
+ *   wpmDynamics: true
  * });
  *
- * // Later, when unmounting or cleaning up:
+ * // Later, teardown when needed:
  * unsubscribe();
  * ```
  */
@@ -47,19 +52,43 @@ export function attachMechanicalAudio(
     profile = 'thock',
     volume = 0.8,
     playRelease = true,
+    stereoPan = true,
+    haptic = false,
+    wpmDynamics = false,
     filter,
   } = options;
 
+  let keyTimestamps: number[] = [];
+
+  const getWpmMultiplier = (): number => {
+    if (!wpmDynamics) return 1.0;
+    const now = Date.now();
+    keyTimestamps.push(now);
+    // Retain only keystrokes from the last 3 seconds
+    keyTimestamps = keyTimestamps.filter((t) => now - t < 3000);
+    const estimatedWpm = keyTimestamps.length * 4; // (keystrokes / 5) * (60 / 3)
+    if (estimatedWpm > 60) {
+      return 1.0 + Math.min(0.18, (estimatedWpm - 60) * 0.0025);
+    }
+    return 1.0;
+  };
+
   const handleKeyDown = (event: Event) => {
     const kbEvent = event as KeyboardEvent;
-    if (kbEvent.repeat) return; // Prevent buzzing when key is held down
+    if (kbEvent.repeat) return; // Prevent machine buzz on key hold
     if (filter && !filter(kbEvent)) return;
+
+    const pitchBoost = getWpmMultiplier();
+    const pan = stereoPan ? calculateKeyPan(kbEvent.key) : 0;
 
     playSwitch({
       profile,
       volume,
+      pitch: pitchBoost,
+      pan,
       key: kbEvent.key,
       isRelease: false,
+      haptic,
     });
   };
 
@@ -68,11 +97,15 @@ export function attachMechanicalAudio(
     const kbEvent = event as KeyboardEvent;
     if (filter && !filter(kbEvent)) return;
 
+    const pan = stereoPan ? calculateKeyPan(kbEvent.key) : 0;
+
     playSwitch({
       profile,
-      volume: volume * 0.4, // Keyup sound is softer
+      volume: volume * 0.4,
+      pan,
       key: kbEvent.key,
       isRelease: true,
+      haptic: false,
     });
   };
 
@@ -102,8 +135,10 @@ export function createSwitchEngine(defaultOptions: PlaySwitchOptions = {}): Swit
         profile: opts.profile ?? profile,
         volume: opts.volume ?? volume,
         pitch: opts.pitch,
+        pan: opts.pan,
         isRelease: opts.isRelease,
         key: opts.key,
+        haptic: opts.haptic,
       });
     },
     getProfile: () => profile,

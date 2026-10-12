@@ -8,7 +8,6 @@ let masterVolume = 0.8;
 
 /**
  * Initializes or resumes the Web Audio API context.
- * Modern browsers require user interaction before playing audio.
  */
 function getAudioContext(): AudioContext | null {
   if (typeof window === 'undefined') return null;
@@ -29,9 +28,7 @@ function getAudioContext(): AudioContext | null {
   }
 
   if (audioCtx.state === 'suspended') {
-    audioCtx.resume().catch(() => {
-      // Ignored if user hasn't interacted yet
-    });
+    audioCtx.resume().catch(() => {});
   }
 
   return audioCtx;
@@ -48,7 +45,6 @@ function initNoiseBuffer(ctx: AudioContext) {
   let b0 = 0, b1 = 0, b2 = 0;
   for (let i = 0; i < bufferSize; i++) {
     const white = Math.random() * 2 - 1;
-    // Pink noise approximation for warm organic clicks
     b0 = 0.99886 * b0 + white * 0.0555179;
     b1 = 0.99332 * b1 + white * 0.0750759;
     b2 = 0.96900 * b2 + white * 0.1538520;
@@ -57,7 +53,7 @@ function initNoiseBuffer(ctx: AudioContext) {
 }
 
 /**
- * Identify the acoustic role of a key for tailored acoustics.
+ * Resolve acoustic role of a key.
  */
 export function resolveKeyRole(key?: string | KeyRole): KeyRole {
   if (!key) return 'standard';
@@ -73,13 +69,46 @@ export function resolveKeyRole(key?: string | KeyRole): KeyRole {
 }
 
 /**
+ * Calculate stereo horizontal position based on standard keyboard layout (-0.45 to +0.45).
+ */
+export function calculateKeyPan(key?: string | KeyRole): number {
+  if (!key || typeof key !== 'string') return 0;
+  const k = key.toLowerCase();
+
+  // Far Left
+  if (['q', 'a', 'z', '1', '2', 'tab', 'capslock', 'shift', 'control'].includes(k)) return -0.42;
+  // Mid Left
+  if (['w', 'e', 's', 'd', 'x', 'c', '3', '4'].includes(k)) return -0.22;
+  // Center
+  if (['r', 't', 'f', 'g', 'v', 'b', '5', '6', ' ', 'space', 'spacebar'].includes(k)) return 0;
+  // Mid Right
+  if (['y', 'u', 'h', 'j', 'n', 'm', '7', '8'].includes(k)) return 0.22;
+  // Far Right
+  if (['i', 'o', 'p', 'k', 'l', '9', '0', '-', '=', '[', ']', ';', '\'', 'enter', 'backspace'].includes(k)) return 0.42;
+
+  return 0;
+}
+
+/**
+ * Trigger mobile haptic micro-pulse.
+ */
+export function triggerHaptic(duration = 7): void {
+  if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+    try {
+      navigator.vibrate(duration);
+    } catch {
+      // Ignore vibration errors if blocked by browser policy
+    }
+  }
+}
+
+/**
  * Procedural synthesizer for "Thock" (lubed tactile/linear mechanical switches).
  */
 function synthesizeThock(ctx: AudioContext, dest: AudioNode, now: number, pitchMult: number, isRelease: boolean, role: KeyRole) {
   const isSpace = role === 'space';
   const duration = isRelease ? 0.03 : (isSpace ? 0.09 : 0.06);
 
-  // 1. Bottom-Out Thud Body (Sine with fast pitch envelope)
   const osc = ctx.createOscillator();
   const oscGain = ctx.createGain();
 
@@ -97,7 +126,6 @@ function synthesizeThock(ctx: AudioContext, dest: AudioNode, now: number, pitchM
   osc.start(now);
   osc.stop(now + duration);
 
-  // 2. Low-Pass Filtered Noise Transient
   if (noiseBuffer) {
     const noise = ctx.createBufferSource();
     noise.buffer = noiseBuffer;
@@ -121,13 +149,60 @@ function synthesizeThock(ctx: AudioContext, dest: AudioNode, now: number, pitchM
 }
 
 /**
+ * Procedural synthesizer for "Creamy" (lubed marbly linear switches, TikTok custom keyboard sound).
+ */
+function synthesizeCreamy(ctx: AudioContext, dest: AudioNode, now: number, pitchMult: number, isRelease: boolean, role: KeyRole) {
+  const isSpace = role === 'space';
+  const duration = isRelease ? 0.025 : (isSpace ? 0.075 : 0.05);
+
+  // 1. Marbly resonance pop (Triangle with smooth glide)
+  const osc = ctx.createOscillator();
+  const oscGain = ctx.createGain();
+
+  const baseFreq = (isSpace ? 140 : (isRelease ? 290 : 220)) * pitchMult;
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(baseFreq * 1.8, now);
+  osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.7, now + duration);
+
+  const vol = isRelease ? 0.3 : (isSpace ? 0.9 : 0.75);
+  oscGain.gain.setValueAtTime(vol, now);
+  oscGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+  osc.connect(oscGain);
+  oscGain.connect(dest);
+  osc.start(now);
+  osc.stop(now + duration);
+
+  // 2. High-cut marbly marble click
+  if (noiseBuffer) {
+    const noise = ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.Q.setValueAtTime(2.2, now);
+    filter.frequency.setValueAtTime((isRelease ? 1600 : 1350) * pitchMult, now);
+    filter.frequency.exponentialRampToValueAtTime(320, now + duration);
+
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(isRelease ? 0.2 : 0.5, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + (duration * 0.75));
+
+    noise.connect(filter);
+    filter.connect(noiseGain);
+    noiseGain.connect(dest);
+    noise.start(now);
+    noise.stop(now + duration);
+  }
+}
+
+/**
  * Procedural synthesizer for "Clicky" (Cherry MX Blue / Kailh Box White).
  */
 function synthesizeClicky(ctx: AudioContext, dest: AudioNode, now: number, pitchMult: number, isRelease: boolean, role: KeyRole) {
   const isSpace = role === 'space';
   const duration = isRelease ? 0.025 : (isSpace ? 0.065 : 0.045);
 
-  // 1. High-frequency click leaf pop (Bandpass noise)
   if (noiseBuffer) {
     const noise = ctx.createBufferSource();
     noise.buffer = noiseBuffer;
@@ -149,7 +224,6 @@ function synthesizeClicky(ctx: AudioContext, dest: AudioNode, now: number, pitch
     noise.stop(now + duration);
   }
 
-  // 2. Metallic Spring Ping (Resonant tone)
   const osc = ctx.createOscillator();
   const oscGain = ctx.createGain();
 
@@ -167,7 +241,6 @@ function synthesizeClicky(ctx: AudioContext, dest: AudioNode, now: number, pitch
   osc.start(now);
   osc.stop(now + duration);
 
-  // 3. Subtle bottom impact for downstroke
   if (!isRelease) {
     const thud = ctx.createOscillator();
     const thudGain = ctx.createGain();
@@ -192,7 +265,6 @@ function synthesizeTypewriter(ctx: AudioContext, dest: AudioNode, now: number, p
   const isSpace = role === 'space';
   const duration = isRelease ? 0.03 : (isSpace ? 0.08 : 0.06);
 
-  // 1. Sharp metallic impact
   const metal = ctx.createOscillator();
   const metalGain = ctx.createGain();
 
@@ -208,7 +280,6 @@ function synthesizeTypewriter(ctx: AudioContext, dest: AudioNode, now: number, p
   metal.start(now);
   metal.stop(now + duration);
 
-  // 2. Hollow mechanical echo
   if (noiseBuffer && !isRelease) {
     const noise = ctx.createBufferSource();
     noise.buffer = noiseBuffer;
@@ -230,10 +301,39 @@ function synthesizeTypewriter(ctx: AudioContext, dest: AudioNode, now: number, p
 }
 
 /**
+ * Procedural synthesizer for "Cyberpunk" (80s Sci-Fi retro terminal).
+ */
+function synthesizeCyberpunk(ctx: AudioContext, dest: AudioNode, now: number, pitchMult: number, isRelease: boolean, role: KeyRole) {
+  const isSpace = role === 'space';
+  const duration = isRelease ? 0.025 : (isSpace ? 0.07 : 0.045);
+
+  const osc = ctx.createOscillator();
+  const oscGain = ctx.createGain();
+
+  const startFreq = (isSpace ? 480 : (isRelease ? 880 : 740)) * pitchMult;
+  osc.type = 'square';
+  osc.frequency.setValueAtTime(startFreq, now);
+  osc.frequency.exponentialRampToValueAtTime(startFreq * 0.4, now + duration);
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(1800, now);
+
+  oscGain.gain.setValueAtTime(isRelease ? 0.2 : 0.5, now);
+  oscGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+  osc.connect(filter);
+  filter.connect(oscGain);
+  oscGain.connect(dest);
+  osc.start(now);
+  osc.stop(now + duration);
+}
+
+/**
  * Procedural synthesizer for "Bubble" (Playful modern UI pop).
  */
 function synthesizeBubble(ctx: AudioContext, dest: AudioNode, now: number, pitchMult: number, isRelease: boolean, role: KeyRole) {
-  if (isRelease) return; // Bubble profile is minimal, skip keyup
+  if (isRelease) return;
   const isSpace = role === 'space';
   const duration = isSpace ? 0.055 : 0.04;
 
@@ -257,7 +357,7 @@ function synthesizeBubble(ctx: AudioContext, dest: AudioNode, now: number, pitch
 }
 
 /**
- * Main switch sound trigger with humanized jitter & key roles.
+ * Main switch sound trigger with humanized jitter, stereo panning & key roles.
  */
 export function playSwitch(options: PlaySwitchOptions = {}): void {
   const ctx = getAudioContext();
@@ -267,7 +367,11 @@ export function playSwitch(options: PlaySwitchOptions = {}): void {
   const role = resolveKeyRole(options.key);
   const isRelease = Boolean(options.isRelease);
 
-  // Humanization jitter: subtle organic variation (±4% pitch, ±5% gain)
+  if (options.haptic) {
+    triggerHaptic(isRelease ? 5 : 8);
+  }
+
+  // Humanization jitter: organic variation (±4% pitch, ±5% gain)
   const jitter = 0.96 + Math.random() * 0.08;
   const userPitch = options.pitch ?? 1.0;
   const pitchMult = userPitch * jitter;
@@ -277,23 +381,43 @@ export function playSwitch(options: PlaySwitchOptions = {}): void {
   const baseVol = options.volume ?? 1.0;
   const volJitter = 0.95 + Math.random() * 0.1;
   keyGain.gain.setValueAtTime(Math.min(1.0, Math.max(0, baseVol * volJitter)), ctx.currentTime);
-  keyGain.connect(masterGain);
+
+  // 3D Spatial Stereo Panning
+  let targetDestination: AudioNode = masterGain;
+  const panValue = options.pan ?? (typeof options.key === 'string' ? calculateKeyPan(options.key) : 0);
+
+  if (panValue !== 0 && typeof ctx.createStereoPanner === 'function') {
+    const panner = ctx.createStereoPanner();
+    panner.pan.setValueAtTime(Math.min(1.0, Math.max(-1.0, panValue)), ctx.currentTime);
+    keyGain.connect(panner);
+    panner.connect(masterGain);
+    targetDestination = keyGain;
+  } else {
+    keyGain.connect(masterGain);
+    targetDestination = keyGain;
+  }
 
   const now = ctx.currentTime;
 
   switch (profile) {
+    case 'creamy':
+      synthesizeCreamy(ctx, targetDestination, now, pitchMult, isRelease, role);
+      break;
+    case 'cyberpunk':
+      synthesizeCyberpunk(ctx, targetDestination, now, pitchMult, isRelease, role);
+      break;
     case 'clicky':
-      synthesizeClicky(ctx, keyGain, now, pitchMult, isRelease, role);
+      synthesizeClicky(ctx, targetDestination, now, pitchMult, isRelease, role);
       break;
     case 'typewriter':
-      synthesizeTypewriter(ctx, keyGain, now, pitchMult, isRelease, role);
+      synthesizeTypewriter(ctx, targetDestination, now, pitchMult, isRelease, role);
       break;
     case 'bubble':
-      synthesizeBubble(ctx, keyGain, now, pitchMult, isRelease, role);
+      synthesizeBubble(ctx, targetDestination, now, pitchMult, isRelease, role);
       break;
     case 'thock':
     default:
-      synthesizeThock(ctx, keyGain, now, pitchMult, isRelease, role);
+      synthesizeThock(ctx, targetDestination, now, pitchMult, isRelease, role);
       break;
   }
 }
