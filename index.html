@@ -3,24 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>click-clack ⌨️ Mechanical Keyboard Audio Demo</title>
+  <title>click-clack ⌨️ Mechanical Keyboard Audio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0d1117;
-      --card: #161b22;
-      --border: #30363d;
-      --accent: #58a6ff;
-      --accent-glow: rgba(88, 166, 255, 0.25);
-      --text: #e6edf3;
-      --text-muted: #8b949e;
-      --key-bg: #21262d;
-      --key-active: #388bfd;
-      --key-shadow: #111418;
-      --green: #3fb950;
-      --orange: #f0883e;
+      --bg: #09090b;
+      --surface: #121215;
+      --surface-elevated: #18181b;
+      --border: #27272a;
+      --border-subtle: #1f1f23;
+      --text: #fafafa;
+      --text-muted: #a1a1aa;
+      --text-subtle: #71717a;
+      --accent: #ffffff;
+      --accent-muted: #27272a;
+      --key-bg: #18181b;
+      --key-border: #27272a;
+      --key-active: #3f3f46;
+      --key-text: #e4e4e7;
+      --green: #22c55e;
     }
 
     * {
@@ -32,377 +35,439 @@
     body {
       background-color: var(--bg);
       color: var(--text);
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
-      overflow-x: hidden;
+      padding: 2.5rem 1.5rem;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .container {
-      max-width: 900px;
+    .app {
+      max-width: 980px;
       width: 100%;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 2.5rem;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
       display: flex;
       flex-direction: column;
-      gap: 1.8rem;
+      gap: 2rem;
     }
 
     header {
-      text-align: center;
-    }
-
-    .badge-bar {
       display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-bottom: 0.8rem;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border-subtle);
       flex-wrap: wrap;
+      gap: 1rem;
     }
 
-    .badge {
-      display: inline-block;
-      padding: 0.35rem 0.85rem;
-      background: rgba(88, 166, 255, 0.1);
-      border: 1px solid rgba(88, 166, 255, 0.3);
-      color: var(--accent);
-      border-radius: 999px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
     }
 
-    .badge.green {
-      background: rgba(63, 185, 80, 0.1);
-      border-color: rgba(63, 185, 80, 0.3);
-      color: var(--green);
-    }
-
-    .badge.orange {
-      background: rgba(240, 136, 62, 0.1);
-      border-color: rgba(240, 136, 62, 0.3);
-      color: var(--orange);
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
     }
 
     h1 {
-      font-size: 2.8rem;
-      font-weight: 800;
+      font-size: 1.5rem;
+      font-weight: 700;
       letter-spacing: -0.03em;
-      background: linear-gradient(135deg, #ffffff 40%, #58a6ff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 0.5rem;
-    }
-
-    p.subtitle {
-      color: var(--text-muted);
-      font-size: 1.05rem;
-    }
-
-    .controls {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-      padding: 1.25rem;
-      background: rgba(13, 17, 23, 0.7);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-    }
-
-    .row-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.2rem;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .profile-group {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .profile-btn {
-      background: var(--key-bg);
-      border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.55rem 0.95rem;
+    }
+
+    .version-tag {
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 400;
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .wpm-stat {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--text-subtle);
+    }
+
+    .wpm-number {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* Minimalist Profile Selector */
+    .controls-strip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+    }
+
+    .segmented-control {
+      display: flex;
+      background: var(--bg);
+      border: 1px solid var(--border-subtle);
       border-radius: 8px;
-      font-size: 0.88rem;
-      font-weight: 600;
+      padding: 3px;
+      gap: 2px;
+      flex-wrap: wrap;
+    }
+
+    .profile-pill {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
       font-family: inherit;
     }
 
-    .profile-btn:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
+    .profile-pill:hover {
+      color: var(--text);
     }
 
-    .profile-btn.active {
-      background: var(--accent);
-      color: #0d1117;
-      border-color: var(--accent);
-      box-shadow: 0 0 15px var(--accent-glow);
+    .profile-pill.active {
+      background: var(--surface-elevated);
+      color: var(--text);
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     }
 
-    .feature-toggles {
+    .toggles-group {
       display: flex;
-      gap: 1.25rem;
-      flex-wrap: wrap;
       align-items: center;
-      font-size: 0.88rem;
+      gap: 1.25rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
     }
 
-    .toggle-label {
+    .mini-toggle {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.45rem;
       cursor: pointer;
       user-select: none;
     }
 
-    .toggle-label input[type="checkbox"] {
-      accent-color: var(--accent);
-      width: 16px;
-      height: 16px;
+    .mini-toggle input[type="checkbox"] {
+      accent-color: #fff;
       cursor: pointer;
     }
 
-    .select-label {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.88rem;
+    .mini-select {
+      background: var(--bg);
+      border: 1px solid var(--border-subtle);
       color: var(--text-muted);
-    }
-
-    select {
-      background: var(--key-bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.35rem 0.65rem;
+      padding: 0.3rem 0.6rem;
       border-radius: 6px;
-      font-family: inherit;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       outline: none;
       cursor: pointer;
     }
 
-    .wpm-meter {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.88rem;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 0.35rem 0.75rem;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-    }
-
-    .wpm-value {
-      color: var(--green);
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-
-    .editor-box {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    label {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    /* Minimalist Typing Area */
+    .editor-container {
+      position: relative;
     }
 
     textarea {
       width: 100%;
-      height: 160px;
-      background: #0d1117;
-      border: 2px solid var(--border);
+      height: 120px;
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
       border-radius: 12px;
       color: var(--text);
-      padding: 1.2rem;
+      padding: 1rem 1.2rem;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       line-height: 1.6;
       resize: vertical;
       outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      transition: border-color 0.15s ease;
     }
 
     textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 20px var(--accent-glow);
+      border-color: #3f3f46;
     }
 
-    .keyboard-preview {
-      display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      gap: 0.5rem;
-      padding: 1rem;
-      background: #0d1117;
-      border-radius: 12px;
-      border: 1px solid var(--border);
+    textarea::placeholder {
+      color: var(--text-subtle);
     }
 
-    .key-cap {
-      aspect-ratio: 1;
+    /* Complete 60% Mechanical Keyboard Layout */
+    .keyboard-chassis {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .kb-row {
+      display: flex;
+      gap: 0.45rem;
+      width: 100%;
+    }
+
+    .key {
+      flex: 1;
+      height: 48px;
       background: var(--key-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      border: 1px solid var(--key-border);
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
+      color: var(--key-text);
       font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      font-size: 0.95rem;
-      box-shadow: 0 4px 0 var(--key-shadow);
-      transition: all 0.08s ease;
-      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 500;
       user-select: none;
+      cursor: pointer;
+      box-shadow: 0 2px 0 #0d0d10;
+      transition: all 0.06s ease;
     }
 
-    .key-cap:active, .key-cap.pressed {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 var(--key-shadow);
-      background: var(--key-active);
+    .key:hover {
+      border-color: #3f3f46;
       color: #fff;
     }
 
-    .key-space {
-      grid-column: span 6;
-      aspect-ratio: auto;
-      height: 48px;
+    .key:active, .key.pressed {
+      transform: translateY(2px);
+      box-shadow: 0 0 0 transparent;
+      background: var(--key-active);
+      color: #fff;
+      border-color: #52525b;
     }
 
-    .key-action {
-      grid-column: span 2;
-      aspect-ratio: auto;
-      height: 48px;
-    }
+    /* Key Width Proportions */
+    .k-wide-125 { flex: 1.25; }
+    .k-wide-150 { flex: 1.5; font-size: 0.75rem; color: var(--text-muted); }
+    .k-wide-175 { flex: 1.75; font-size: 0.75rem; color: var(--text-muted); }
+    .k-wide-200 { flex: 2.0; font-size: 0.75rem; color: var(--text-muted); }
+    .k-wide-225 { flex: 2.25; font-size: 0.75rem; color: var(--text-muted); }
+    .k-space { flex: 6.25; font-size: 0.75rem; color: var(--text-subtle); }
 
     footer {
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-subtle);
+      font-size: 0.82rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-subtle);
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
-    code {
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    footer a:hover {
+      color: var(--text);
+    }
+
+    .cmd-badge {
       font-family: 'JetBrains Mono', monospace;
-      background: rgba(255, 255, 255, 0.06);
-      padding: 0.2rem 0.4rem;
-      border-radius: 4px;
-      font-size: 0.9em;
+      background: var(--surface);
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="app">
     <header>
-      <div class="badge-bar">
-        <span class="badge">PROMPT SYNTHESIZED • &lt; 2KB</span>
-        <span class="badge green">🎧 3D STEREO PANNING</span>
-        <span class="badge orange">🪵 DESKMAT RESONANCE</span>
-      </div>
-      <h1>click-clack ⌨️</h1>
-      <p class="subtitle">Satisfying mechanical keyboard audio feedback for web apps. Zero audio files.</p>
-    </header>
-
-    <div class="controls">
-      <div class="row-controls">
-        <div class="profile-group">
-          <button class="profile-btn active" data-profile="thock">🪨 Thock</button>
-          <button class="profile-btn" data-profile="creamy">🧋 Creamy</button>
-          <button class="profile-btn" data-profile="clicky">⚡ Clicky</button>
-          <button class="profile-btn" data-profile="typewriter">📜 Typewriter</button>
-          <button class="profile-btn" data-profile="cyberpunk">🤖 Cyberpunk</button>
-          <button class="profile-btn" data-profile="bubble">🫧 Bubble</button>
+      <div class="brand">
+        <div class="logo-row">
+          <h1>click-clack</h1>
+          <span class="version-tag">v1.2.0</span>
         </div>
+        <p class="subtitle">Synthesized mechanical switch acoustics for the web. Zero audio files.</p>
+      </div>
 
-        <div class="wpm-meter">
-          <span>SPEED:</span>
-          <span class="wpm-value" id="wpm-display">0</span>
+      <div class="header-meta">
+        <div class="wpm-stat">
+          <span class="wpm-number" id="wpm-val">0</span>
           <span>WPM</span>
         </div>
+        <div class="cmd-badge">
+          npm i @0xsharon/click-clack
+        </div>
+      </div>
+    </header>
+
+    <!-- Minimalist Controls Strip -->
+    <div class="controls-strip">
+      <div class="segmented-control">
+        <button class="profile-pill active" data-profile="thock">Thock</button>
+        <button class="profile-pill" data-profile="creamy">Creamy</button>
+        <button class="profile-pill" data-profile="clicky">Clicky</button>
+        <button class="profile-pill" data-profile="typewriter">Typewriter</button>
+        <button class="profile-pill" data-profile="cyberpunk">Cyberpunk</button>
+        <button class="profile-pill" data-profile="bubble">Bubble</button>
       </div>
 
-      <div class="row-controls">
-        <div class="feature-toggles">
-          <label class="toggle-label">
-            <input type="checkbox" id="stereo-toggle" checked />
-            <span>3D Stereo</span>
-          </label>
-          <label class="toggle-label">
-            <input type="checkbox" id="wpm-toggle" checked />
-            <span>WPM Boost</span>
-          </label>
-          <label class="toggle-label">
-            <input type="checkbox" id="bell-toggle" checked />
-            <span>🔔 Carriage Bell</span>
-          </label>
-          <label class="select-label">
-            <span>Deskmat:</span>
-            <select id="deskmat-select">
-              <option value="none">None (Clean)</option>
-              <option value="felt">Felt (Dampened)</option>
-              <option value="wood">Wood (Warm)</option>
-              <option value="metal">Metal (Ping)</option>
-            </select>
-          </label>
-        </div>
-
-        <div style="display: flex; align-items: center; gap: 0.6rem; color: var(--text-muted); font-size: 0.88rem;">
-          <span>Volume</span>
-          <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="0.8" style="accent-color: var(--accent); cursor: pointer;" />
+      <div class="toggles-group">
+        <label class="mini-toggle">
+          <input type="checkbox" id="stereo-check" checked />
+          <span>3D Stereo</span>
+        </label>
+        <label class="mini-toggle">
+          <input type="checkbox" id="wpm-check" checked />
+          <span>WPM Pitch</span>
+        </label>
+        <label class="mini-toggle">
+          <input type="checkbox" id="bell-check" checked />
+          <span>Bell on Enter</span>
+        </label>
+        <select id="deskmat-check" class="mini-select">
+          <option value="none">Desk: Clean</option>
+          <option value="felt">Desk: Felt</option>
+          <option value="wood">Desk: Wood</option>
+          <option value="metal">Desk: Metal</option>
+        </select>
+        <div style="display: flex; align-items: center; gap: 0.4rem;">
+          <input type="range" id="vol-range" min="0" max="1" step="0.05" value="0.8" style="width: 70px; accent-color: #fff;" />
         </div>
       </div>
     </div>
 
-    <div class="editor-box">
-      <label for="editor">
-        <span>Type to feel the switches:</span>
-        <span style="color: var(--accent);">🎧 Plug in headphones for 3D stereo acoustics</span>
-      </label>
-      <textarea id="editor" autofocus placeholder="Start typing here... Notice left-hand keys (Q, A, Z) sound in your left ear, right-hand keys (P, L, Enter) in your right ear, Spacebar has heavy stabilizer thud, and hitting Enter rings the carriage return bell!"></textarea>
+    <!-- Textarea Input Area -->
+    <div class="editor-container">
+      <textarea id="typing-input" autofocus placeholder="Type anything here or click on-screen keys to feel the switches..."></textarea>
     </div>
 
-    <div class="keyboard-preview" id="key-grid">
-      <div class="key-cap" data-key="q">Q</div>
-      <div class="key-cap" data-key="w">W</div>
-      <div class="key-cap" data-key="e">E</div>
-      <div class="key-cap" data-key="r">R</div>
-      <div class="key-cap" data-key="t">T</div>
-      <div class="key-cap" data-key="y">Y</div>
-      <div class="key-cap" data-key="u">U</div>
-      <div class="key-cap" data-key="i">I</div>
-      <div class="key-cap" data-key="o">O</div>
-      <div class="key-cap" data-key="p">P</div>
-      <div class="key-cap key-action" data-key="Backspace">⌫ Del</div>
-      <div class="key-cap key-space" data-key=" ">Spacebar (Stabilizer)</div>
-      <div class="key-cap key-action" data-key="Enter">⏎ Enter 🔔</div>
+    <!-- Complete 60% Mechanical Keyboard Layout -->
+    <div class="keyboard-chassis" id="keyboard">
+      <!-- Number Row -->
+      <div class="kb-row">
+        <div class="key" data-key="`">`</div>
+        <div class="key" data-key="1">1</div>
+        <div class="key" data-key="2">2</div>
+        <div class="key" data-key="3">3</div>
+        <div class="key" data-key="4">4</div>
+        <div class="key" data-key="5">5</div>
+        <div class="key" data-key="6">6</div>
+        <div class="key" data-key="7">7</div>
+        <div class="key" data-key="8">8</div>
+        <div class="key" data-key="9">9</div>
+        <div class="key" data-key="0">0</div>
+        <div class="key" data-key="-">-</div>
+        <div class="key" data-key="=">=</div>
+        <div class="key k-wide-200" data-key="Backspace">Backspace</div>
+      </div>
+
+      <!-- QWERTY Row -->
+      <div class="kb-row">
+        <div class="key k-wide-150" data-key="Tab">Tab</div>
+        <div class="key" data-key="q">Q</div>
+        <div class="key" data-key="w">W</div>
+        <div class="key" data-key="e">E</div>
+        <div class="key" data-key="r">R</div>
+        <div class="key" data-key="t">T</div>
+        <div class="key" data-key="y">Y</div>
+        <div class="key" data-key="u">U</div>
+        <div class="key" data-key="i">I</div>
+        <div class="key" data-key="o">O</div>
+        <div class="key" data-key="p">P</div>
+        <div class="key" data-key="[">[</div>
+        <div class="key" data-key="]">]</div>
+        <div class="key k-wide-150" data-key="\">\</div>
+      </div>
+
+      <!-- Home Row -->
+      <div class="kb-row">
+        <div class="key k-wide-175" data-key="CapsLock">Caps</div>
+        <div class="key" data-key="a">A</div>
+        <div class="key" data-key="s">S</div>
+        <div class="key" data-key="d">D</div>
+        <div class="key" data-key="f">F</div>
+        <div class="key" data-key="g">G</div>
+        <div class="key" data-key="h">H</div>
+        <div class="key" data-key="j">J</div>
+        <div class="key" data-key="k">K</div>
+        <div class="key" data-key="l">L</div>
+        <div class="key" data-key=";">;</div>
+        <div class="key" data-key="'">'</div>
+        <div class="key k-wide-225" data-key="Enter">Enter ↵</div>
+      </div>
+
+      <!-- Bottom Alphabet Row -->
+      <div class="kb-row">
+        <div class="key k-wide-225" data-key="Shift">Shift</div>
+        <div class="key" data-key="z">Z</div>
+        <div class="key" data-key="x">X</div>
+        <div class="key" data-key="c">C</div>
+        <div class="key" data-key="v">V</div>
+        <div class="key" data-key="b">B</div>
+        <div class="key" data-key="n">N</div>
+        <div class="key" data-key="m">M</div>
+        <div class="key" data-key=",">,</div>
+        <div class="key" data-key=".">.</div>
+        <div class="key" data-key="/">/</div>
+        <div class="key k-wide-225" data-key="Shift">Shift</div>
+      </div>
+
+      <!-- Spacebar Row -->
+      <div class="kb-row">
+        <div class="key k-wide-125" data-key="Control">Ctrl</div>
+        <div class="key k-wide-125" data-key="Meta">⌘</div>
+        <div class="key k-wide-125" data-key="Alt">Alt</div>
+        <div class="key k-space" data-key=" ">Space (Stabilizer)</div>
+        <div class="key k-wide-125" data-key="Alt">Alt</div>
+        <div class="key k-wide-125" data-key="Control">Ctrl</div>
+      </div>
     </div>
 
     <footer>
-      Run <code>npm i @0xsharon/click-clack</code> to install. Published under MIT © 0xSHARON.
+      <div>Press <span class="cmd-badge">Ctrl + Alt + M</span> to toggle mute</div>
+      <div>
+        <a href="https://github.com/0xSHARON/click-clack" target="_blank" rel="noopener">GitHub</a> &bull;
+        <a href="https://www.npmjs.com/package/@0xsharon/click-clack" target="_blank" rel="noopener">npm</a> &bull;
+        MIT © 0xSHARON
+      </div>
     </footer>
   </div>
 
@@ -441,11 +506,11 @@
     function calculatePan(key) {
       if (!stereoEnabled || !key) return 0;
       const k = key.toLowerCase();
-      if (['q', 'a', 'z', '1', '2', 'tab', 'capslock', 'shift'].includes(k)) return -0.42;
-      if (['w', 'e', 's', 'd', 'x', 'c', '3', '4'].includes(k)) return -0.22;
-      if (['r', 't', 'f', 'g', 'v', 'b', '5', '6', ' '].includes(k)) return 0;
-      if (['y', 'u', 'h', 'j', 'n', 'm', '7', '8'].includes(k)) return 0.22;
-      if (['i', 'o', 'p', 'k', 'l', '9', '0', 'enter', 'backspace'].includes(k)) return 0.42;
+      if (['`', '1', '2', 'q', 'a', 'z', 'tab', 'capslock', 'shift'].includes(k)) return -0.42;
+      if (['3', '4', 'w', 'e', 's', 'd', 'x', 'c'].includes(k)) return -0.22;
+      if (['5', '6', 'r', 't', 'f', 'g', 'v', 'b', ' '].includes(k)) return 0;
+      if (['7', '8', 'y', 'u', 'h', 'j', 'n', 'm'].includes(k)) return 0.22;
+      if (['9', '0', '-', '=', 'i', 'o', 'p', 'k', 'l', 'enter', 'backspace'].includes(k)) return 0.42;
       return 0;
     }
 
@@ -454,7 +519,7 @@
       keyTimestamps.push(now);
       keyTimestamps = keyTimestamps.filter(t => now - t < 3000);
       const wpm = Math.round(keyTimestamps.length * 4);
-      document.getElementById('wpm-display').innerText = wpm;
+      document.getElementById('wpm-val').innerText = wpm;
       return wpm;
     }
 
@@ -462,7 +527,7 @@
       const now = Date.now();
       keyTimestamps = keyTimestamps.filter(t => now - t < 3000);
       const wpm = Math.round(keyTimestamps.length * 4);
-      document.getElementById('wpm-display').innerText = wpm;
+      document.getElementById('wpm-val').innerText = wpm;
     }, 1000);
 
     function playBell() {
@@ -694,7 +759,7 @@
       }
     }
 
-    const editor = document.getElementById('editor');
+    const editor = document.getElementById('typing-input');
     editor.addEventListener('keydown', (e) => {
       if (e.repeat) return;
       playSwitchSound(e.key, false);
@@ -706,50 +771,52 @@
       highlightKey(e.key, false);
     });
 
-    document.querySelectorAll('.profile-btn').forEach(btn => {
+    document.querySelectorAll('.profile-pill').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.profile-pill').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentProfile = btn.dataset.profile;
         playSwitchSound('a', false);
       });
     });
 
-    document.getElementById('vol-slider').addEventListener('input', (e) => {
+    document.getElementById('vol-range').addEventListener('input', (e) => {
       masterVolume = parseFloat(e.target.value);
     });
 
-    document.getElementById('stereo-toggle').addEventListener('change', (e) => {
+    document.getElementById('stereo-check').addEventListener('change', (e) => {
       stereoEnabled = e.target.checked;
     });
 
-    document.getElementById('wpm-toggle').addEventListener('change', (e) => {
+    document.getElementById('wpm-check').addEventListener('change', (e) => {
       wpmDynamicsEnabled = e.target.checked;
     });
 
-    document.getElementById('bell-toggle').addEventListener('change', (e) => {
+    document.getElementById('bell-check').addEventListener('change', (e) => {
       bellEnabled = e.target.checked;
     });
 
-    document.getElementById('deskmat-select').addEventListener('change', (e) => {
+    document.getElementById('deskmat-check').addEventListener('change', (e) => {
       deskmatMaterial = e.target.value;
     });
 
-    document.querySelectorAll('.key-cap').forEach(key => {
-      key.addEventListener('mousedown', () => {
-        playSwitchSound(key.dataset.key, false);
-        key.classList.add('pressed');
+    document.querySelectorAll('.key').forEach(keyEl => {
+      keyEl.addEventListener('mousedown', () => {
+        playSwitchSound(keyEl.dataset.key, false);
+        keyEl.classList.add('pressed');
       });
-      key.addEventListener('mouseup', () => {
-        playSwitchSound(key.dataset.key, true);
-        key.classList.remove('pressed');
+      keyEl.addEventListener('mouseup', () => {
+        playSwitchSound(keyEl.dataset.key, true);
+        keyEl.classList.remove('pressed');
       });
     });
 
     function highlightKey(key, isPressed) {
-      const match = Array.from(document.querySelectorAll('.key-cap')).find(el => 
-        el.dataset.key.toLowerCase() === key.toLowerCase()
-      );
+      const match = Array.from(document.querySelectorAll('.key')).find(el => {
+        const k = el.dataset.key.toLowerCase();
+        const inputK = key.toLowerCase();
+        return k === inputK;
+      });
       if (match) {
         if (isPressed) match.classList.add('pressed');
         else match.classList.remove('pressed');
