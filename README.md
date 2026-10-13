@@ -1,23 +1,24 @@
 # click-clack ⌨️
 
-> Procedurally synthesized mechanical keyboard acoustics for web apps.  
-> **Zero audio files**, under **2KB minified**, powered by the Web Audio API.
+> Procedurally synthesized mechanical keyboard acoustics for the web.  
+> **Zero audio files**, under **2KB minified**, powered entirely by the Web Audio API.
 
 [![npm version](https://img.shields.io/npm/v/@0xsharon/click-clack?color=18181b&style=flat-square)](https://www.npmjs.com/package/@0xsharon/click-clack)
 [![bundle size](https://img.shields.io/bundlephobia/minzip/@0xsharon/click-clack?color=18181b&style=flat-square)](https://bundlephobia.com/package/@0xsharon/click-clack)
 [![GitHub](https://img.shields.io/badge/GitHub-0xSHARON%2Fclick--clack-18181b?style=flat-square&logo=github)](https://github.com/0xSHARON/click-clack)
-[![CI](https://img.shields.io/github/actions/workflow/status/0xSHARON/click-clack/ci.yml?branch=main&style=flat-square&label=CI&color=18181b)](https://github.com/0xSHARON/click-clack/actions)
+[![CI Status](https://img.shields.io/github/actions/workflow/status/0xSHARON/click-clack/ci.yml?branch=main&style=flat-square&label=CI&color=18181b)](https://github.com/0xSHARON/click-clack/actions)
 [![license](https://img.shields.io/npm/l/@0xsharon/click-clack?color=18181b&style=flat-square)](./LICENSE)
 
 ---
 
-## 🎧 Interactive Studio
+## 🎧 Interactive Studio Demo
 
-👉 **[Try the Live Demo](https://0xsharon.github.io/click-clack/)** — Plug in headphones to hear the 3D ear-to-ear spatial panning in real-time.
+👉 **[Try the Live Web Demo](https://0xsharon.github.io/click-clack/)**  
+*Plug in headphones to experience real-time 3D stereo ear-to-ear panning as your fingers move across the physical keyboard.*
 
 <p align="center">
   <a href="https://0xsharon.github.io/click-clack/">
-    <img src="./assets/preview.png" alt="click-clack interactive mechanical keyboard studio" width="880" style="border-radius: 12px; box-shadow: 0 16px 40px rgba(0,0,0,0.4);" />
+    <img src="./assets/preview.png" alt="click-clack interactive mechanical keyboard studio demo" width="940" style="border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);" />
   </a>
 </p>
 
@@ -25,46 +26,75 @@
 
 ## Why this exists
 
-Tactile micro-feedback makes web apps feel alive, responsive, and satisfying. But loading real audio files comes with headaches:
+Tactile micro-feedback makes web applications, code playgrounds, games, and terminal emulators feel responsive and satisfying. But adding mechanical switch audio usually comes with trade-offs:
 
-1. **Asset Bloat:** A basic sound pack of switch samples easily adds 300KB–1MB of `.mp3` or `.wav` files to your network payload.
-2. **Latency & Jitter:** Decoding audio files introduces perceptible micro-delays between physical keystrokes and playback.
-3. **Machine-Gun Monotony:** Playing the exact same audio sample 100 times per minute sounds artificial and robotic.
+1. **Asset Bloat:** A standard switch sound pack adds 300KB to 1.5MB of `.mp3` or `.wav` files to your network payload.
+2. **Playback Latency:** Browser audio decoding and standard `<audio>` tags create noticeable micro-delays (15–40ms) between a physical keystroke and the sound trigger.
+3. **The "Machine Gun" Effect:** Repeatedly firing the identical static audio sample 120 times a minute sounds robotic, repetitive, and unnatural.
 
-`click-clack` takes an acoustic physics approach. Instead of playing recorded audio, it uses the browser's native **Web Audio API** to generate the sound waves procedurally on the fly using oscillators, bandpass filters, and shaped pink noise bursts.
+`click-clack` takes an acoustic physics approach. Instead of fetching and playing recorded audio files, it synthesizes the sound of mechanical switches **in real time** using the browser's native **Web Audio API**.
 
-- **Weight:** Under 2KB minified.
-- **Dependencies:** 0.
-- **Audio Assets:** 0.
-- **Latency:** Instantaneous (<1ms).
+- **Payload:** Under 2KB minified (<1.2KB gzipped).
+- **Runtime Dependencies:** Exactly 0.
+- **Audio Assets Required:** 0 files (no MP3s, WAVs, or base64 audio strings).
+- **Acoustic Latency:** Instantaneous (<1ms).
+- **Organic Variance:** Every keystroke features dynamic pitch and decay jitter (±4%) so typing fast feels organic and alive.
 
 ---
 
-## Key Features
+## Audio Synthesis Signal Chain
 
-- 🪨 **6 Switch Profiles:**
-  - `thock` — Lubed tactile/linear mechanical switches (Holy Panda / Topre bottom-out).
-  - `creamy` — High-pitch marbly custom keyboard sound with lubed linear glide.
-  - `clicky` — Crisp click-leaf with metallic spring resonance (Cherry MX Blue / Kailh Box White).
-  - `typewriter` — Vintage steel typewriter with mechanical arm strike.
-  - `cyberpunk` — Retro 80s computer terminal key with subtle synth blip.
-  - `bubble` — Modern soft UI pop.
-- 🎧 **3D Spatial Stereo Panning:** Keys on the left of your physical keyboard (`Q, A, Z`) pan slightly to your left ear; keys on the right (`P, L, Enter`) pan to your right ear.
-- 🏎️ **WPM Flow-State Dynamics:** Automatically tracks typing speed. Typing over 60 WPM subtly tightens the acoustic decay and nudges pitch upward for a rewarding flow state.
-- 🪵 **Deskmat Acoustic Resonance:** Toggle between `none`, `felt` (high-cut dampening), `wood` (warm body resonance), and `metal` (high ring).
-- 🔔 **Typewriter Carriage Return Bell:** Synthesizes an authentic mechanical `"DING!"` bell when pressing `Enter`.
-- 📱 **Mobile Haptics:** Synchronizes a subtle 7ms vibration pulse via `navigator.vibrate` on supported touchscreen devices.
-- 🧩 **Multi-Framework:** First-class packages for **React**, **Vue 3**, **Svelte**, and **Zero-Code HTML Attributes**.
+Here is how `click-clack` transforms a physical key event into tactile acoustics in under a millisecond:
+
+<p align="center">
+  <img src="./assets/architecture.png" alt="click-clack Web Audio API Signal Chain Architecture" width="940" style="border-radius: 12px; box-shadow: 0 16px 40px rgba(0,0,0,0.4);" />
+</p>
+
+```
+Physical Keystroke / Input Event
+              │
+      [Key Role Analysis] ─── Spacebar? ─── Heavy sub-bass bottom-out + wire rattle
+              │
+    [calculateKeyPan] ─────── Maps horizontal coordinate (-0.42 Left to +0.42 Right)
+              │
+   [Procedural Synthesis Nodes]
+   ├── Click Leaf Transient: Bandpass filtered pink noise burst (Q: 3.5, 3.2kHz)
+   ├── Bottom-Out Clack:     Dual exponential sine sweep (130Hz → 65Hz)
+   └── Spring Resonance:     Triangle oscillator (1100Hz ring)
+              │
+     [Deskmat Acoustic] ───── BiquadFilter: Lowpass (Felt) / Peaking (Wood/Metal)
+              │
+    [StereoPannerNode] ────── Ear-to-ear headphone positioning
+              │
+      [Master Gain] ───────── WPM Flow dynamics scaler (tightens envelope >60 WPM)
+              │
+      AudioDestination ────── Headphones / Speakers
+```
+
+---
+
+## Switch Profiles
+
+`click-clack` ships with 6 procedural switch profiles modeled after real mechanical switches and vintage typewriters:
+
+| Profile | Real-World Equivalent | Base Frequency | Noise Filter | Acoustic Character |
+| :--- | :--- | :--- | :--- | :--- |
+| `thock` | Lubed Holy Panda / Topre | 130Hz → 65Hz Sine | 1.8kHz Lowpass | Deep, rounded bottom-out with dampened housing clack. Heavy 85Hz spacebar wire ping. |
+| `creamy` | Lubed Linear (Gateron Oil King) | 380Hz → 160Hz Sine | 3.8kHz Bandpass (Q: 4.5) | High-pitch marbly "pop" with smooth linear glide and minimal housing rattle. |
+| `clicky` | Cherry MX Blue / Kailh Box White | 180Hz → 90Hz Sine | 3.2kHz Bandpass (Q: 3.5) | Sharp click-leaf snap followed by high-frequency spring harmonic ping (1.1kHz). |
+| `typewriter` | 1940s Underwood / Smith Corona | 140Hz Sawtooth | 2.6kHz Bandpass (Q: 2.0) | Heavy mechanical steel strike, mechanical chassis clunk, and optional carriage bell on `Enter`. |
+| `cyberpunk` | 1980s Sci-Fi CRT Terminal | 440Hz → 220Hz Square | N/A (FM blip) | Digital 8-bit keypress blip with retro synthesizer harmonic overtone. |
+| `bubble` | Modern Soft UI Pop | 280Hz → 620Hz Sine | N/A (Liquid envelope) | Gentle, rounded liquid water droplet pop for modern minimalist app interfaces. |
 
 ---
 
 ## Installation
 
+Install the package via npm, pnpm, yarn, or bun:
+
 ```bash
 npm install @0xsharon/click-clack
 ```
-
-Or with your preferred package manager:
 
 ```bash
 pnpm add @0xsharon/click-clack
@@ -74,45 +104,68 @@ yarn add @0xsharon/click-clack
 bun add @0xsharon/click-clack
 ```
 
+Dual ESM and CommonJS bundles are included out of the box with complete TypeScript definitions.
+
 ---
 
 ## Quick Start
 
-### 1. Vanilla JavaScript / TypeScript
+### 1. Attach to an Input or Textarea
 
-Attach to any input, textarea, or the entire window:
+The fastest way to add mechanical audio to an editor or form:
 
 ```ts
 import { attachMechanicalAudio } from '@0xsharon/click-clack';
 
-// Attach to a specific textarea
-const detach = attachMechanicalAudio(document.querySelector('textarea'), {
-  profile: 'creamy',      // Switch sound profile
-  volume: 0.8,           // Master volume (0.0 - 1.0)
+const inputElement = document.querySelector('textarea');
+
+// Attach audio listener
+const detach = attachMechanicalAudio(inputElement, {
+  profile: 'creamy',      // 'thock' | 'creamy' | 'clicky' | 'typewriter' | 'cyberpunk' | 'bubble'
+  volume: 0.8,           // Master volume (0.0 to 1.0)
   stereoPan: true,       // Enable 3D ear-to-ear spatial positioning
-  wpmDynamics: true,     // Ramps pitch when typing fast (>60 WPM)
+  wpmDynamics: true,     // Dynamically ramps pitch when typing fast (>60 WPM)
   deskmat: 'wood',       // 'none' | 'felt' | 'wood' | 'metal'
-  carriageBell: true,    // Chime bell on Enter
-  playRelease: true      // Play softer upstroke reset click on keyup
+  carriageBell: true,    // Rings vintage bell chime on Enter key
+  playRelease: true      // Plays subtle upstroke release click on keyup
 });
 
-// Clean up when destroying the element or unmounting
-detach();
+// Detach whenever the component unmounts or element is removed
+// detach();
 ```
 
-### 2. Manual Triggers
+### 2. Global Window Binding
 
-Play sounds imperatively anywhere in your app (buttons, shortcuts, canvas games):
+To provide subtle mechanical feedback across your entire application:
+
+```ts
+import { attachMechanicalAudio } from '@0xsharon/click-clack';
+
+// Attach to window so any typing in any field plays audio
+const detach = attachMechanicalAudio(window, {
+  profile: 'thock',
+  volume: 0.6,
+  stereoPan: true
+});
+```
+
+### 3. Imperative Manual Trigger
+
+You can also trigger switch sounds imperatively for UI buttons, games, modal confirmations, or calculator keys:
 
 ```ts
 import { playSwitch } from '@0xsharon/click-clack';
 
-// Trigger switch sound on button click
-submitButton.addEventListener('click', () => {
-  playSwitch({ profile: 'creamy', volume: 0.9 });
+// Play switch sound on button click
+submitBtn.addEventListener('click', () => {
+  playSwitch({
+    profile: 'creamy',
+    volume: 0.9,
+    key: 'Enter' // Triggers Enter acoustics & bell
+  });
 });
 
-// Trigger spacebar stabilizer sound manually
+// Trigger spacebar stabilizer manually
 playSwitch({ profile: 'thock', key: ' ' });
 ```
 
@@ -121,6 +174,8 @@ playSwitch({ profile: 'thock', key: ' ' });
 ## Framework Integrations
 
 ### React (`@0xsharon/click-clack/react`)
+
+Use custom React hooks to attach to refs or the entire window:
 
 ```tsx
 import React, { useRef } from 'react';
@@ -133,44 +188,47 @@ export function NoteEditor() {
   useClickClack(textareaRef, {
     profile: 'creamy',
     stereoPan: true,
-    wpmDynamics: true
+    wpmDynamics: true,
+    deskmat: 'felt'
   });
 
   return (
-    <textarea
-      ref={textareaRef}
-      placeholder="Type to feel the switches..."
-    />
+    <div className="editor-card">
+      <textarea
+        ref={textareaRef}
+        placeholder="Type to feel the switches..."
+      />
+    </div>
   );
 }
 
-// Or enable across the entire window:
+// Or enable globally across your entire app:
 export function App() {
   useGlobalClickClack({ profile: 'thock', volume: 0.7 });
-  return <div id="app">...</div>;
+  return <div id="root">...</div>;
 }
 ```
 
 ### Vue 3 (`@0xsharon/click-clack/vue`)
 
-Use the `v-click-clack` directive:
+Use the `vClickClack` directive:
 
 ```vue
-<script setup>
+<script setup lang="ts">
 import { vClickClack } from '@0xsharon/click-clack/vue';
 </script>
 
 <template>
   <textarea
     v-click-clack="{ profile: 'creamy', stereoPan: true, wpmDynamics: true }"
-    placeholder="Vue 3 mechanical feedback..."
+    placeholder="Vue 3 mechanical switch feedback..."
   />
 </template>
 ```
 
 ### Svelte (`@0xsharon/click-clack/svelte`)
 
-Use the `use:clickClack` action:
+Use the `clickClack` action:
 
 ```svelte
 <script>
@@ -179,111 +237,169 @@ Use the `use:clickClack` action:
 
 <textarea
   use:clickClack={{ profile: 'creamy', stereoPan: true }}
-  placeholder="Svelte mechanical feedback..."
+  placeholder="Svelte mechanical switch feedback..."
 />
 ```
 
 ### Zero-Code HTML Script (`@0xsharon/click-clack/auto`)
 
-For static sites, Webflow, Shopify, or WordPress blogs, drop in the script and use HTML data attributes:
+For static blogs, Webflow, Shopify, or documentation sites, simply drop in the auto script and add `data-click-clack` attributes to your HTML tags:
 
 ```html
 <!-- Enable on the entire page -->
 <body data-click-clack="thock">
 
-<!-- Or customize per textarea -->
+<!-- Or customize per input/textarea -->
 <textarea
   data-click-clack="creamy"
   data-volume="0.8"
   data-stereo="true"
   data-bell="true"
+  data-deskmat="wood"
 ></textarea>
 
 <script type="module" src="https://unpkg.com/@0xsharon/click-clack/dist/auto.mjs"></script>
 ```
 
----
-
-## Configuration & Options
-
-### `AttachOptions`
-
-| Option | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `profile` | `SwitchProfile` | `'thock'` | `'thock'`, `'creamy'`, `'clicky'`, `'typewriter'`, `'cyberpunk'`, `'bubble'` |
-| `volume` | `number` | `0.8` | Output gain between `0.0` and `1.0` |
-| `stereoPan` | `boolean` | `true` | Positions sounds horizontally based on key coordinates |
-| `wpmDynamics` | `boolean` | `false` | Slightly tightens envelope & pitch when typing >60 WPM |
-| `deskmat` | `DeskmatAcoustic` | `'none'` | Resonance filter: `'none'`, `'felt'`, `'wood'`, `'metal'` |
-| `carriageBell`| `boolean` | `false` | Rings vintage chime on `Enter` keydown |
-| `haptic` | `boolean` | `false` | Fires `navigator.vibrate(7)` pulse on mobile touchscreens |
-| `playRelease` | `boolean` | `true` | Synthesizes subtle upstroke release click on keyup |
-| `filter` | `(e: KeyboardEvent) => boolean` | `undefined` | Filter to ignore specific keys (e.g. Escape or F-keys) |
-
-### `PlaySwitchOptions`
-
-| Option | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `profile` | `SwitchProfile` | Active profile | Sound signature profile |
-| `volume` | `number` | `1.0` | Individual trigger volume |
-| `pitch` | `number` | `1.0` | Pitch scaling multiplier |
-| `pan` | `number` | `0.0` | Manual pan position (`-1.0` left to `1.0` right) |
-| `key` | `string \| KeyRole` | `'standard'` | Key character (e.g., `' '` for spacebar stabilizer) |
-| `deskmat` | `DeskmatAcoustic` | `'none'` | Surface resonance |
-| `carriageBell`| `boolean` | `false` | Play bell chime on enter |
-| `haptic` | `boolean` | `false` | Trigger mobile vibration |
-| `isRelease` | `boolean` | `false` | Whether this trigger represents a key release |
+> **Built-in Global Mute Hotkey:** When using the auto-script, users can press `Ctrl + Alt + M` (or `Cmd + Alt + M`) anytime to mute or unmute audio. A clean, non-intrusive on-screen toast is automatically displayed.
 
 ---
 
-## Global Controls
+## Complete API Reference
+
+### `attachMechanicalAudio(target, options)`
+
+Attaches mechanical audio listeners to a DOM element, `window`, or `document`.
 
 ```ts
-import { isMuted, setMuted, toggleMute, setMasterVolume, setMasterProfile } from '@0xsharon/click-clack';
+function attachMechanicalAudio(
+  target: EventTarget | HTMLElement | Window,
+  options?: AttachOptions
+): () => void;
+```
 
-// Mute / Unmute
+**`AttachOptions` Parameters:**
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `profile` | `SwitchProfile` | `'thock'` | Switch signature: `'thock'`, `'creamy'`, `'clicky'`, `'typewriter'`, `'cyberpunk'`, `'bubble'` |
+| `volume` | `number` | `0.8` | Master output volume between `0.0` (silent) and `1.0` (maximum) |
+| `stereoPan` | `boolean` | `true` | Positions sounds across the stereo field based on the key's physical horizontal position |
+| `wpmDynamics` | `boolean` | `false` | Dynamically ramps pitch and tightens envelope decay when typing speed exceeds 60 WPM |
+| `deskmat` | `DeskmatAcoustic` | `'none'` | Acoustic resonance filter: `'none'` (neutral), `'felt'` (damped), `'wood'` (warm), `'metal'` (bright) |
+| `carriageBell` | `boolean` | `false` | Plays a vintage mechanical bell chime when the `Enter` key is pressed |
+| `haptic` | `boolean` | `false` | Fires a 7ms vibration pulse via `navigator.vibrate` on supported touchscreen devices |
+| `playRelease` | `boolean` | `true` | Synthesizes a subtle upstroke reset click when releasing keys (`keyup`) |
+| `filter` | `(e: KeyboardEvent) => boolean` | `undefined` | Custom filter predicate to ignore specific keys (e.g., ignoring `Escape` or modifier keys) |
+
+**Returns:** A cleanup function `() => void` that removes all attached event listeners.
+
+---
+
+### `playSwitch(options)`
+
+Imperatively synthesizes a single switch stroke.
+
+```ts
+function playSwitch(options?: PlaySwitchOptions): void;
+```
+
+**`PlaySwitchOptions` Parameters:**
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `profile` | `SwitchProfile` | Active Profile | Switch profile used for synthesis |
+| `volume` | `number` | `1.0` | Individual trigger volume |
+| `pitch` | `number` | `1.0` | Pitch scaling multiplier |
+| `pan` | `number` | `0.0` | Stereo pan position (`-1.0` hard left to `+1.0` hard right) |
+| `key` | `string \| KeyRole` | `'standard'` | Key identifier (e.g., `' '` for spacebar bottom-out, `'Enter'` for carriage return) |
+| `deskmat` | `DeskmatAcoustic` | `'none'` | Deskmat surface resonance filter |
+| `carriageBell` | `boolean` | `false` | Whether to chime the carriage bell on enter |
+| `haptic` | `boolean` | `false` | Trigger mobile tactile vibration |
+| `isRelease` | `boolean` | `false` | Whether this trigger represents a key release upstroke |
+
+---
+
+### Global Controls & Mute State
+
+```ts
+import {
+  isMuted,
+  setMuted,
+  toggleMute,
+  getMasterVolume,
+  setMasterVolume,
+  getMasterProfile,
+  setMasterProfile
+} from '@0xsharon/click-clack';
+
+// Toggle mute state globally
 toggleMute();
 setMuted(true);
-console.log(isMuted()); // true
+console.log('Is audio muted?', isMuted()); // true
 
 // Adjust master volume and default profile
 setMasterVolume(0.5);
 setMasterProfile('creamy');
 ```
 
-> **Built-in Hotkey:** When using `@0xsharon/click-clack/auto`, pressing `Ctrl + Alt + M` (or `Cmd + Alt + M`) toggles audio globally with an on-screen toast.
+---
+
+## Acoustic Physics & Engine Internals
+
+### 1. Pink Noise Caching (Zero Garbage Collection)
+In real mechanical switches, the high-frequency contact snap is shaped noise rather than a pure tone. Standard Web Audio implementations often generate fresh noise buffers on every keystroke, which triggers JavaScript garbage collector spikes during fast typing.
+
+`click-clack` pre-calculates a single 1-second pink noise buffer using the **Paul Kellet 3-pole filtering algorithm** once at initialization:
+
+```ts
+// Pre-computed 1-second pink noise buffer reused across all keystrokes
+const bufSize = audioCtx.sampleRate;
+const buffer = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+const data = buffer.getChannelData(0);
+let b0 = 0, b1 = 0, b2 = 0;
+
+for (let i = 0; i < bufSize; i++) {
+  const white = Math.random() * 2 - 1;
+  b0 = 0.99886 * b0 + white * 0.0555179;
+  b1 = 0.99332 * b1 + white * 0.0750759;
+  b2 = 0.96900 * b2 + white * 0.1538520;
+  data[i] = (b0 + b1 + b2 + white * 0.5362) * 0.11;
+}
+```
+During typing, a lightweight `AudioBufferSourceNode` references this pre-allocated buffer with a random time offset, ensuring 0 memory allocation per keystroke.
+
+### 2. 3D Spatial Stereo Panning
+When using headphones, typing on a physical keyboard produces sound in distinct physical locations:
+- Left keys (`Q`, `A`, `Z`, `Tab`, `Shift`) map to pan `-0.42` to `-0.22` (Left ear)
+- Center keys (`T`, `G`, `B`, `Space`) map to pan `0.0` (Center)
+- Right keys (`P`, `L`, `Enter`, `Backspace`) map to pan `+0.22` to `+0.42` (Right ear)
+
+This produces an authentic sense of physical keyboard width in headphones without fatiguing the listener.
+
+### 3. WPM Flow-State Dynamics
+When typing speed exceeds 60 WPM, the engine dynamically tightens the decay envelope (from 70ms down to 45ms) and subtly nudges the pitch upward by 2–18%. This prevents acoustic mudding during fast typing and provides a rewarding sense of momentum.
+
+### 4. Tab Visibility Auto-Sleep
+When a user switches browser tabs (`document.visibilityState === 'hidden'`), the engine automatically suspends the underlying `AudioContext`, preventing background battery drain and CPU consumption. The context instantly resumes when the tab becomes active again.
 
 ---
 
-## Architecture & How It Works
+## Browser Support & Autoplay Policy
 
-```
-Physical / Virtual Keystroke
-            │
-    [resolveKeyRole] ──── Is it Spacebar? ─── Apply heavy bottom-out + wire rattle
-            │
-   [calculateKeyPan] ──── Horizontal mapping (-0.42 to +0.42)
-            │
-   [Procedural Synthesis]
-   ├── Click Leaf: Bandpass noise transient (3kHz, Q: 3.5)
-   ├── Bottom-Out: Dual sine wave (110Hz – 220Hz exponential drop)
-   └── Spring Ping: Triangle oscillator (920Hz – 1200Hz)
-            │
-   [Deskmat Filter] ───── Felt (Lowpass) / Wood (280Hz Peak) / Metal (3.2kHz Peak)
-            │
-   [StereoPannerNode] ─── Headphone ear-to-ear positioning
-            │
-       Master Gain ────── Audio Destination
-```
+`click-clack` is compatible with all modern browsers:
+- **Chrome / Chromium** 66+
+- **Firefox** 60+
+- **Safari** 14.1+ (macOS & iOS)
+- **Edge** 79+
 
-1. **Noise Buffer Caching:** A single 1-second pink noise buffer is generated once at initialization and reused via `AudioBufferSourceNode`, preventing garbage collection pauses during fast typing.
-2. **Organic Pitch Jitter:** Every keystroke has a randomized `±4%` pitch shift so repeated keys sound natural rather than synthetic.
-3. **AudioContext Autoplay Compliance:** Lazily resumes the `AudioContext` only after the first genuine user interaction, adhering to browser autoplay restrictions.
-4. **Tab Sleep:** Automatically suspends the audio context when `document.visibilityState === 'hidden'` to preserve client battery and CPU.
+Modern browsers require a genuine user gesture (mouse click or keystroke) before allowing web audio playback. `click-clack` handles this automatically: the `AudioContext` remains idle until the first user interaction, then resumes instantly without throwing autoplay warnings or unhandled promise errors.
 
 ---
 
-## Development
+## Local Development
+
+If you'd like to contribute or experiment with sound profiles locally:
 
 ```bash
 # Clone the repository
@@ -293,15 +409,23 @@ cd click-clack
 # Install dependencies
 npm install
 
-# Run unit tests
+# Run unit tests with Vitest
 npm test
 
 # Build dual ESM/CJS bundles with tsup
 npm run build
 
-# Start watch mode during development
+# Start live TypeScript watch mode
 npm run dev
 ```
+
+To run the interactive studio locally, simply open `index.html` or `demo.html` in your browser.
+
+---
+
+## Contributing
+
+Pull requests are very welcome! If you want to design a new switch profile (e.g., buckling spring, silent tactile, or optical linear), feel free to open a PR or submit an issue on [GitHub](https://github.com/0xSHARON/click-clack).
 
 ---
 
