@@ -1,6 +1,6 @@
 {
   "name": "@0xsharon/click-clack",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Satisfying, procedurally synthesized mechanical keyboard audio feedback for web apps. Zero audio files, under 2KB minified.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -36,7 +36,8 @@
     "dist",
     "README.md",
     "LICENSE",
-    "SECURITY.md"
+    "SECURITY.md",
+    "assets"
   ],
   "scripts": {
     "build": "tsup",

@@ -23,7 +23,7 @@
 
 <p align="center">
   <a href="https://0xsharon.github.io/click-clack/">
-    <img src="./assets/preview.png" alt="click-clack interactive mechanical keyboard studio demo" width="940" style="border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);" />
+    <img src="https://raw.githubusercontent.com/0xSHARON/click-clack/main/assets/preview.png" alt="click-clack interactive mechanical keyboard studio demo" width="940" style="border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);" />
   </a>
 </p>
 
@@ -52,7 +52,7 @@ Tactile micro-feedback makes web applications, code playgrounds, games, and term
 Here is how `click-clack` transforms a physical key event into tactile acoustics in under a millisecond:
 
 <p align="center">
-  <img src="./assets/architecture.png" alt="click-clack Web Audio API Signal Chain Architecture" width="940" style="border-radius: 12px; box-shadow: 0 16px 40px rgba(0,0,0,0.4);" />
+  <img src="https://raw.githubusercontent.com/0xSHARON/click-clack/main/assets/architecture.png" alt="click-clack Web Audio API Signal Chain Architecture" width="940" style="border-radius: 12px; box-shadow: 0 16px 40px rgba(0,0,0,0.4);" />
 </p>
 
 ```
