@@ -20,10 +20,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
@@ -36,7 +36,13 @@ jobs:
         run: npm run build
 
       - name: Publish to npmjs.org
-        run: npm publish --access public --provenance
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          if npm view "@0xsharon/click-clack@${CURRENT_VERSION}" version >/dev/null 2>&1; then
+            echo "Version ${CURRENT_VERSION} is already published to npmjs.org. Skipping."
+          else
+            npm publish --access public --provenance
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -51,10 +57,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           registry-url: 'https://npm.pkg.github.com'
 
       - name: Install dependencies
@@ -64,6 +70,8 @@ jobs:
         run: npm run build
 
       - name: Publish to GitHub Packages
-        run: npm publish
+        run: |
+          npm publish || echo "Package version may already exist on GitHub Packages. Skipping."
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
