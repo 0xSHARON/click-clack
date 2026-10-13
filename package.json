@@ -35,7 +35,8 @@
   "files": [
     "dist",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "SECURITY.md"
   ],
   "scripts": {
     "build": "tsup",
@@ -62,9 +63,20 @@
   ],
   "author": "0xSHARON",
   "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/0xSHARON"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/0xSHARON/click-clack.git"
+    "url": "git+https://github.com/0xSHARON/click-clack.git"
   },
   "bugs": {
     "url": "https://github.com/0xSHARON/click-clack/issues"
@@ -78,10 +90,18 @@
     "vitest": "^2.1.8"
   },
   "peerDependencies": {
-    "react": ">=16.8.0"
+    "react": ">=16.8.0",
+    "vue": ">=3.0.0",
+    "svelte": ">=3.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    },
+    "svelte": {
       "optional": true
     }
   }
