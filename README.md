@@ -3,11 +3,16 @@
 > Procedurally synthesized mechanical keyboard acoustics for the web.  
 > **Zero audio files**, under **2KB minified**, powered entirely by the Web Audio API.
 
-[![npm version](https://img.shields.io/npm/v/@0xsharon/click-clack?color=18181b&style=flat-square)](https://www.npmjs.com/package/@0xsharon/click-clack)
-[![bundle size](https://img.shields.io/bundlephobia/minzip/@0xsharon/click-clack?color=18181b&style=flat-square)](https://bundlephobia.com/package/@0xsharon/click-clack)
-[![GitHub](https://img.shields.io/badge/GitHub-0xSHARON%2Fclick--clack-18181b?style=flat-square&logo=github)](https://github.com/0xSHARON/click-clack)
-[![CI Status](https://img.shields.io/github/actions/workflow/status/0xSHARON/click-clack/ci.yml?branch=main&style=flat-square&label=CI&color=18181b)](https://github.com/0xSHARON/click-clack/actions)
-[![license](https://img.shields.io/npm/l/@0xsharon/click-clack?color=18181b&style=flat-square)](./LICENSE)
+<p align="left">
+  <a href="https://www.npmjs.com/package/@0xsharon/click-clack"><img src="https://img.shields.io/npm/v/@0xsharon/click-clack?color=18181b&style=flat-square&label=npm" alt="npm version" /></a>
+  <a href="https://github.com/0xSHARON/click-clack/packages"><img src="https://img.shields.io/badge/GitHub%20Packages-v1.2.0-18181b?style=flat-square&logo=github" alt="GitHub Packages" /></a>
+  <a href="https://bundlephobia.com/package/@0xsharon/click-clack"><img src="https://img.shields.io/bundlephobia/minzip/@0xsharon/click-clack?color=18181b&style=flat-square" alt="bundle size" /></a>
+  <a href="https://github.com/0xSHARON/click-clack/actions"><img src="https://img.shields.io/github/actions/workflow/status/0xSHARON/click-clack/ci.yml?branch=main&style=flat-square&label=CI&color=18181b" alt="CI Status" /></a>
+  <a href="./SECURITY.md"><img src="https://img.shields.io/badge/dependencies-0-22c55e?style=flat-square" alt="0 Dependencies" /></a>
+  <a href="https://github.com/0xSHARON/click-clack/stargazers"><img src="https://img.shields.io/github/stars/0xSHARON/click-clack?style=flat-square&color=18181b" alt="stars" /></a>
+  <a href="https://socket.dev/npm/package/@0xsharon/click-clack"><img src="https://img.shields.io/badge/Socket-Security%20Verified-22c55e?style=flat-square" alt="Socket Verified" /></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/npm/l/@0xsharon/click-clack?color=18181b&style=flat-square" alt="license" /></a>
+</p>
 
 ---
 
@@ -88,13 +93,17 @@ Physical Keystroke / Input Event
 
 ---
 
-## Installation
+## 📦 Installation
 
-Install the package via npm, pnpm, yarn, or bun:
+You can install `@0xsharon/click-clack` from either **npm** or **GitHub Packages**:
+
+### Option 1: Via npm (Standard)
 
 ```bash
 npm install @0xsharon/click-clack
 ```
+
+Or with your preferred package manager:
 
 ```bash
 pnpm add @0xsharon/click-clack
@@ -104,7 +113,20 @@ yarn add @0xsharon/click-clack
 bun add @0xsharon/click-clack
 ```
 
-Dual ESM and CommonJS bundles are included out of the box with complete TypeScript definitions.
+### Option 2: Via GitHub Packages Registry
+
+`@0xsharon/click-clack` is also hosted on [GitHub Packages](https://github.com/0xSHARON/click-clack/packages):
+
+1. Add the GitHub npm registry scope to your `.npmrc`:
+   ```ini
+   @0xsharon:registry=https://npm.pkg.github.com
+   ```
+2. Install as usual:
+   ```bash
+   npm install @0xsharon/click-clack
+   ```
+
+Dual ESM and CommonJS bundles are included out of the box with zero runtime dependencies and complete TypeScript definitions.
 
 ---
 
@@ -423,9 +445,36 @@ To run the interactive studio locally, simply open `index.html` or `demo.html` i
 
 ---
 
-## Contributing
+## 🌟 Star History
 
-Pull requests are very welcome! If you want to design a new switch profile (e.g., buckling spring, silent tactile, or optical linear), feel free to open a PR or submit an issue on [GitHub](https://github.com/0xSHARON/click-clack).
+<p align="center">
+  <a href="https://star-history.com/#0xSHARON/click-clack&Date">
+    <img src="https://api.star-history.com/svg?repos=0xSHARON/click-clack&type=Date&theme=dark" alt="click-clack Star History Chart" width="850" style="border-radius: 10px;" />
+  </a>
+</p>
+
+---
+
+## 🤝 Contributors
+
+Contributions of all kinds—submitting new switch acoustics, framework plugins, bug fixes, or documentation improvements—are warmly welcomed!
+
+<p align="center">
+  <a href="https://github.com/0xSHARON/click-clack/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=0xSHARON/click-clack" alt="click-clack Contributors" />
+  </a>
+</p>
+
+Please read our [Contributing Guide](./CONTRIBUTING.md) and [Security Policy](./SECURITY.md) before submitting pull requests.
+
+---
+
+## 💖 Community & Support
+
+- ⭐ **Star this repository** on [GitHub](https://github.com/0xSHARON/click-clack) to support future switch profiles.
+- 📦 **View on GitHub Packages**: [@0xsharon/click-clack](https://github.com/0xSHARON/click-clack/packages)
+- 📮 **Submit feature requests or switch sound ideas** on [GitHub Issues](https://github.com/0xSHARON/click-clack/issues).
+- ☕ **Sponsor the developer** on [GitHub Sponsors](https://github.com/sponsors/0xSHARON).
 
 ---
 
